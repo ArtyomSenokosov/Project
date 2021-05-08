@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ru.mail.senokosov.artem.web</groupId>
+    <artifactId>web-module</artifactId>
+    <version>1.0</version>
+    <name>web-module</name>
+
+    <parent>
+        <artifactId>Project</artifactId>
+        <groupId>ru.mail.senokosov.artem</groupId>
+        <version>1.0</version>
+    </parent>
+
+    <properties>
+        <service-module.version>1.0</service-module.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>ru.mail.senokosov.artem.service</groupId>
+            <artifactId>service-module</artifactId>
+            <version>${service-module.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

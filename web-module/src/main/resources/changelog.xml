@@ -1,0 +1,155 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+   http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="1" author="artem.senokosov@mail.ru">
+        <createTable tableName="role">
+            <column name="id" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="role" type="varchar(60)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="artem.senokosov@mail.ru">
+        <addAutoIncrement columnDataType="int"
+                          columnName="id"
+                          incrementBy="1"
+                          tableName="role"/>
+    </changeSet>
+
+    <changeSet id="3" author="artem.senokosov@mail.ru">
+        <createTable tableName="user">
+            <column name="id" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="uuid" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="secondname" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firstname" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="middlename" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4" author="artem.senokosov@mail.ru">
+        <addAutoIncrement columnDataType="int"
+                          columnName="role_id"
+                          incrementBy="1"
+                          tableName="user"/>
+    </changeSet>
+
+    <changeSet id="5" author="artem.senokosov@mail.ru">
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="user"
+                                 constraintName="fk_user_role_id"
+                                 deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION"
+                                 onUpdate="NO ACTION"
+                                 referencedColumnNames="id"
+                                 referencedTableName="role"/>
+    </changeSet>
+
+    <changeSet id="6" author="artem.senokosov@mail.ru">
+        <createTable tableName="status">
+            <column name="id" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="status" type="varchar(60)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="7" author="artem.senokosov@mail.ru">
+        <addAutoIncrement columnDataType="int"
+                          columnName="id"
+                          incrementBy="1"
+                          tableName="status"/>
+    </changeSet>
+
+    <changeSet id="8" author="artem.senokosov@mail.ru">
+        <createTable tableName="review">
+            <column name="id" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="topic" type="varchar(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="review" type="varchar(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_time" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="re_user" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="9" author="artem.senokosov@mail.ru">
+        <addAutoIncrement columnDataType="int"
+                          columnName="status_id"
+                          incrementBy="1"
+                          tableName="review"/>
+    </changeSet>
+
+    <changeSet id="10" author="artem.senokosov@mail.ru">
+        <addAutoIncrement columnDataType="int"
+                          columnName="re_user"
+                          incrementBy="1"
+                          tableName="review"/>
+    </changeSet>
+
+    <changeSet id="11" author="artem.senokosov@mail.ru">
+        <addForeignKeyConstraint baseColumnNames="status_id"
+                                 baseTableName="review"
+                                 constraintName="fk_review_status_id"
+                                 deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION"
+                                 onUpdate="NO ACTION"
+                                 referencedColumnNames="id"
+                                 referencedTableName="status"/>
+    </changeSet>
+
+    <changeSet id="12" author="artem.senokosov@mail.ru">
+        <addForeignKeyConstraint baseColumnNames="re_user"
+                                 baseTableName="review"
+                                 constraintName="fk_review_user_id"
+                                 deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION"
+                                 onUpdate="NO ACTION"
+                                 referencedColumnNames="id"
+                                 referencedTableName="user"/>
+    </changeSet>
+
+</databaseChangeLog>

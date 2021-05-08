@@ -1,0 +1,13 @@
+<th xmlns:th="http://www.w3.org/1999/xhtml">
+    <a th:href="@{'/page/' + ${currentPage} + '?sortField=firstName&sortDir=' + ${reverseSortDir}}">
+        Employee First Name</a>
+</th>
+<th xmlns:th="http://www.w3.org/1999/xhtml">
+    <a th:href="@{'/page/' + ${currentPage} + '?sortField=lastName&sortDir=' + ${reverseSortDir}}">
+        Employee Last Name</a>
+</th>
+<th xmlns:th="http://www.w3.org/1999/xhtml">
+    <a th:href="@{'/page/' + ${currentPage} + '?sortField=email&sortDir=' + ${reverseSortDir}}">
+        Employee Email</a>
+</th>
+<th> Actions</th>

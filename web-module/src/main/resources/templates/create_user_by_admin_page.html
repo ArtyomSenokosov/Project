@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>Add User</title>
+</head>
+<body>
+<form action="#" th:action="@{/add_file}" th:object="${fileDTO}" method="post">
+    <table>
+        <tr>
+            <td>Second Name:</td>
+            <td><input type="text" th:field="*{secondname}"/></td>
+            <td>First Name:</td>
+            <td><input type="text" th:field="*{firstname}"/></td>
+            <td>Middle Name:</td>
+            <td><input type="text" th:field="*{middlename}"/></td>
+            <td>Email:</td>
+            <td><input type="text" th:field="*{email}"/></td>
+            <td>Role:</td>
+            <td><select th:text="${user.role}">
+                <option th:each="role : ${allRoles}"
+                        th:value="${role}"
+                        th:text="#{${'seedstarter.type.' + role}}"></option>
+            </select></td>
+        </tr>
+        <tr>
+            <td>
+                <button type="submit">Submit</button>
+            </td>
+        </tr>
+    </table>
+</form>
+
+
+<a th:href="@{/}">Back</a>
+
+</body>
+</html>
