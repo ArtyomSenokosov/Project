@@ -1,7 +1,5 @@
 package ru.mail.senokosov.artem.repository;
 
-import ru.mail.senokosov.artem.repository.model.ReviewStatus;
-
 import java.util.List;
 
 public interface GenericRepository<I, T> {

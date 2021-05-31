@@ -171,14 +171,22 @@
             <column name="customer_id" type="int">
                 <constraints nullable="false"/>
             </column>
+            <column name="comment_id" type="int">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 
     <changeSet id="13" author="artem.senokosov@mail.ru">
-        <addAutoIncrement columnDataType="int"
-                          columnName="id"
-                          incrementBy="1"
-                          tableName="comment"/>
+        <addForeignKeyConstraint baseColumnNames="comment_id"
+                                 baseTableName="comment"
+                                 constraintName="fk_comment_id"
+                                 deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION"
+                                 onUpdate="NO ACTION"
+                                 referencedColumnNames="id"
+                                 referencedTableName="comment"/>
     </changeSet>
 
     <changeSet id="14" author="artem.senokosov@mail.ru">
@@ -228,7 +236,7 @@
     <changeSet id="17" author="artem.senokosov@mail.ru">
         <addForeignKeyConstraint baseColumnNames="comment_id"
                                  baseTableName="article"
-                                 constraintName="fk_comment_id"
+                                 constraintName="fk_article_comment_id"
                                  deferrable="false"
                                  initiallyDeferred="false"
                                  onDelete="NO ACTION"

@@ -14,7 +14,7 @@ public class ReviewStatus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    @Column(name = "status")
+    @Column(name = "reviewStatus")
     @Enumerated(EnumType.STRING)
     private ReviewStatusEnum status;
 }

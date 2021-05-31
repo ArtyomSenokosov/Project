@@ -26,9 +26,9 @@ public class Order {
     @Column(name = "total_price")
     private Long totalPrice;
     @ManyToOne(optional = false)
-    @JoinTable(name = "or_user")
+    @JoinTable(name = "user_id")
     private User user;
     @ManyToOne(optional = false)
-    @JoinTable(name = "or_user_details")
+    @JoinTable(name = "user_details_id")
     private UserInfo userInfo;
 }

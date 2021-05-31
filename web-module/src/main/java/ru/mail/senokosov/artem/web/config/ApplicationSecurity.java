@@ -33,7 +33,7 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
                 .hasRole("CUSTOMER_USER")
                 .antMatchers("/api/**")
                 .hasRole("SECURE_API_USER")
-                .antMatchers("/login", "/", "/access-denied")
+                .antMatchers("/login", "/", "/access-denied", "/articles", "/items", "/reviews")
                 .permitAll()
                 .and()
                 .formLogin()
