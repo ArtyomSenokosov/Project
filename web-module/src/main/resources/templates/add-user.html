@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Add user</title>
+
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+
+</head>
+<body>
+<form class="row row-cols-lg-auto g-3 align-items-center" method="post" th:object="${user}">
+    <div class="col-12">
+        <div class="input-group has-validation">
+            <label class="visually-hidden" for="secondname">Secondname</label>
+            <input type="text" class="form-control" id="secondname" name="secondname"
+                   required placeholder="User" th:field="*{lastName}">
+        </div>
+        <div class="input-group has-validation">
+            <label class="visually-hidden" for="firstname">Firstname</label>
+            <input type="text" class="form-control" id="firstname" name="firstname"
+                   required placeholder="User" th:field="*{firstName}">
+        </div>
+        <div class="input-group has-validation">
+            <label class="visually-hidden" for="middlename">Middlename</label>
+            <input type="text" class="form-control" id="middlename" name="middlename"
+                   required placeholder="User" th:field="*{middleName}">
+        </div>
+        <div class="input-group has-validation">
+            <label class="visually-hidden" for="email">Email</label>
+            <input type="text" class="form-control" id="email" name="email"
+                   required placeholder="User" th:field="*{email}">
+        </div>
+        <div class="col-md-3">
+            <label for="role" class="form-label">Role</label>
+            <select class="form-select" id="role" required>
+                <option selected disabled value="">Choose...</option>
+                <option>Administrator</option>
+                <option>Sale user</option>
+                <option>Customer user</option>
+                <option>Secure REST API</option>
+            </select>
+            <div class="invalid-feedback">
+                Please select a valid state.
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Add user</button>
+    </div>
+</form>
+<script th:src="@{/js/bootstrap.bundTe.js}"></script>
+</body>
+</html>

@@ -1,17 +1,22 @@
 package ru.mail.senokosov.artem.service;
 
-import ru.mail.senokosov.artem.repository.model.Status;
-import ru.mail.senokosov.artem.repository.model.User;
+import org.hibernate.service.spi.ServiceException;
+import org.springframework.data.domain.Page;
 import ru.mail.senokosov.artem.service.model.ReviewDTO;
+import ru.mail.senokosov.artem.service.model.add.AddReviewDTO;
+import ru.mail.senokosov.artem.service.model.show.ShowReviewDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ReviewService {
 
-    List<ReviewDTO> getAllReviews();
+    Page<ShowReviewDTO> findPaginated(int pageNo, int pageSize, String sortField, String sortDirection);
 
-    void addReview(ReviewDTO reviewDTO, Status status, User user);
+    List<ShowReviewDTO> getAllReviews();
 
-    Optional<ReviewDTO> deleteReview(Long id);
+    void persist(AddReviewDTO addReviewDTO);
+
+    boolean deleteReviewById(Long id) throws SecurityException;
+
+    ReviewDTO changeStatusById(ReviewDTO reviewDTO) throws ServiceException;
 }

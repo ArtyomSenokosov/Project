@@ -1,8 +1,10 @@
 package ru.mail.senokosov.artem.service;
 
-import ru.mail.senokosov.artem.repository.model.enums.RoleEnum;
+import ru.mail.senokosov.artem.service.model.show.ShowRoleDTO;
+
+import java.util.List;
 
 public interface RoleService {
 
-    void addRole(RoleEnum roleEnum);
+    List<ShowRoleDTO> getAll();
 }

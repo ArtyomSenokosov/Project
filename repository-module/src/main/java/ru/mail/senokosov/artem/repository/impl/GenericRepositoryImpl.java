@@ -15,6 +15,7 @@ public class GenericRepositoryImpl<I, T> implements GenericRepository<I, T> {
 
     protected Class<T> entityClass;
 
+    @SuppressWarnings("unchecked")
     public GenericRepositoryImpl() {
         ParameterizedType genericSuperclass = (ParameterizedType) getClass()
                 .getGenericSuperclass();
@@ -42,8 +43,9 @@ public class GenericRepositoryImpl<I, T> implements GenericRepository<I, T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<T> findAll() {
-        String query = "from" + entityClass.getName() + "c";
+        String query = "FROM" + entityClass.getName();
         Query q = (Query) entityManager.createQuery(query);
         return q.getResultList();
     }

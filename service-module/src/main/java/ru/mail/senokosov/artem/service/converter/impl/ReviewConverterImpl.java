@@ -2,44 +2,67 @@ package ru.mail.senokosov.artem.service.converter.impl;
 
 import org.springframework.stereotype.Component;
 import ru.mail.senokosov.artem.repository.model.Review;
-import ru.mail.senokosov.artem.repository.model.Status;
+import ru.mail.senokosov.artem.repository.model.ReviewStatus;
 import ru.mail.senokosov.artem.repository.model.User;
 import ru.mail.senokosov.artem.service.converter.ReviewConverter;
 import ru.mail.senokosov.artem.service.model.ReviewDTO;
+import ru.mail.senokosov.artem.service.model.add.AddReviewDTO;
+import ru.mail.senokosov.artem.service.model.show.ShowReviewDTO;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static ru.mail.senokosov.artem.service.util.ServiceUtil.getFormatDateTime;
 
 @Component
 public class ReviewConverterImpl implements ReviewConverter {
+
     @Override
-    public Review convert(ReviewDTO reviewDTO, Status status, User user) {
+    public ShowReviewDTO convert(Review review) {
+        ShowReviewDTO showReviewDTO = new ShowReviewDTO();
+        Long id = review.getId();
+        showReviewDTO.setId(id);
+        User user = review.getUser();
+        if (Objects.nonNull(user)) {
+            String firstname = user.getFirstname();
+            showReviewDTO.setFirstname(firstname);
+            String secondname = user.getSecondname();
+            showReviewDTO.setSecondname(secondname);
+            String middlename = user.getMiddlename();
+            showReviewDTO.setMiddlename(middlename);
+        }
+        LocalDateTime localDateTime = review.getLocalDate();
+        if (Objects.nonNull(localDateTime)) {
+            String formatDateTime = getFormatDateTime(localDateTime);
+            showReviewDTO.setDate(formatDateTime);
+        }
+        String topic = review.getTopic();
+        showReviewDTO.setTopic(topic);
+        String content = review.getReview();
+        showReviewDTO.setReview(content);
+        return showReviewDTO;
+    }
+
+    @Override
+    public Review convert(AddReviewDTO addReviewDTO) {
         Review review = new Review();
-        String topic = reviewDTO.getTopic();
+        String topic = addReviewDTO.getTopic();
         review.setTopic(topic);
-        String reviewName = reviewDTO.getReview();
-        review.setReview(reviewName);
-        LocalDate localDate = reviewDTO.getLocalDate();
-        review.setLocalDate(localDate);
-        review.setStatus(status);
-        review.setUser(user);
+        String content = addReviewDTO.getReview();
+        review.setReview(content);
         return review;
     }
 
     @Override
-    public ReviewDTO convert(Review review) {
+    public ReviewDTO convertToChange(Review review) {
         ReviewDTO reviewDTO = new ReviewDTO();
         Long id = review.getId();
         reviewDTO.setId(id);
-        String topic = review.getTopic();
-        reviewDTO.setTopic(topic);
-        String reviewName = review.getReview();
-        reviewDTO.setReview(reviewName);
-        LocalDate localDate = review.getLocalDate();
-        reviewDTO.setLocalDate(localDate);
-        Status status = review.getStatus();
+        ReviewStatus status = review.getReviewStatus();
         reviewDTO.setStatus(status);
-        User user = review.getUser();
-        reviewDTO.setUser(user);
         return reviewDTO;
     }
 }
