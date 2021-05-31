@@ -11,14 +11,14 @@ import java.util.HashSet;
 
 public class UserLogin implements UserDetails {
 
-    private User user;
+    private User user;//UserDTO
 
-    public UserLogin(User user) {
+    public UserLogin(User user) {//userrepository
         this.user = user;
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<? extends GrantedAuthority> getAuthorities() {//поиск из базы данных finduser
         Collection<GrantedAuthority> authorities = new HashSet<>();
         Role role = user.getRole();
         GrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(role.getRole().name());

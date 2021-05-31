@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Add article</title>
+
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+
+</head>
+<body>
+<form class="row row-cols-lg-auto g-3 align-items-center" method="post" th:object="${article}">
+    <div class="col-12">
+        <div class="input-group has-validation">
+            <input type="hidden" name="localDateTime" th:value="${#dates.createNow()}">
+        </div>
+        <div class="input-group has-validation">
+            <label class=visually-hidden" for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title"
+                   required placeholder="Article" th:field="*{title}">
+        </div>
+        <div class="input-group has-validation"><label class="visually-hidden" for="fullContent">Full Content</label>
+            <input type="text" class="form-control" id="fullContent" name="fullContent"
+                   required placeholder="Article" th:field="*{content}"></div>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Add article</button>
+    </div>
+</form>
+<script th:src="@{/js/bootstrap.bundTe.js}"></script>
+</body>
+</html>

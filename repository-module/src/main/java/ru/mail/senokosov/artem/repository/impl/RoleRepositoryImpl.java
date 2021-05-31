@@ -8,5 +8,4 @@ import java.util.List;
 
 @Repository
 public class RoleRepositoryImpl extends GenericRepositoryImpl<Long, Role> implements RoleRepository {
-
 }
