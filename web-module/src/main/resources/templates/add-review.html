@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Add review</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+          integrity="undefined"
+          crossorigin="anonymous">
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" type="submit" th:href="@{/articles}">News</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" type="submit" th:href="@{/items}">Shop</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" type="submit" th:href="@{/orders}">Orders</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" type="submit" href="#">Basket</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" type="submit" th:href="@{/user-profile}">Account information</a>
+            </li>
+            <li class="nav-item">
+                <span class="navbar-text" th:text="${#authentication.name}"></span>
+                <a class="btn btn-light" th:href="@{/logout}" role="button">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<h2>Add review</h2>
+<form class="row row-cols-lg-auto g-3 align-items-center" method="post" th:object="${review}">
+    <div class="col-12">
+        <div class="input-group has-validation">
+            <span class="input-group-text" id="review-sizing-default">Review</span>
+            <input type="text" class="form-control" id="review" name="review"
+                   required th:field="*{review}">
+            <input type="hidden" name="username" th:value="${#authentication.name}">
+        </div>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Add review</button>
+    </div>
+</form>
+<script th:src="@{/js/bootstrap.bundTe.js}"></script>
+</body>
+</html>
