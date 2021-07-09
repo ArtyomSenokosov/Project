@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface UserRepository extends GenericRepository<Long, User> {
 
-    User findUserByEmail(String email);
-
-    List<User> findAll(int pageNumber, int pageSize);
+    User findUserByUsername(String email);
 
     Long getCountUsers();
+
+    List<User> findAll(int startPosition, int maximumUsersOnPage);
 }

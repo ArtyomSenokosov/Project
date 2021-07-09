@@ -1,10 +1,12 @@
 package ru.mail.senokosov.artem.repository.model;
 
 import lombok.Data;
-import org.hibernate.annotations.Type;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -13,24 +15,45 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
-    @Column(name = "uuid")
-    @Type(type = "uuid-char")
-    private UUID uuid;
-    @Column(name = "secondname")
-    private String secondname;
-    @Column(name = "firstname")
-    private String firstname;
-    @Column(name = "middlename")
-    private String middlename;
-    @Column(name = "email")
+    @Column(name = "last_name")
+    private String lastName;
+    @Column(name = "first_name")
+    private String firstName;
+    @Column(name = "middle_name")
+    private String middleName;
+    @Column
     private String email;
-    @Column(name = "password")
+    @Column
     private String password;
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private Role role;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Review> reviews = new HashSet<>();
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Article> articles = new HashSet<>();
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Comment> comments = new HashSet<>();
+    @OneToOne(fetch = FetchType.LAZY,
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private UserInfo userInfo;
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<OrderInfo> orderDetails = new HashSet<>();
 }

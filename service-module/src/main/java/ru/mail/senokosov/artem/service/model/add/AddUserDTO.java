@@ -1,7 +1,7 @@
 package ru.mail.senokosov.artem.service.model.add;
 
 import lombok.Data;
-import ru.mail.senokosov.artem.repository.model.Role;
+import ru.mail.senokosov.artem.service.model.enums.RoleDTOEnum;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import static ru.mail.senokosov.artem.service.constant.UserServiceConstants.MAXIMUM_LAST_NAME_SIZE;
 import static ru.mail.senokosov.artem.service.constant.UserValidationConstant.*;
 
 @Data
@@ -38,7 +37,7 @@ public class AddUserDTO {
     @Pattern(regexp = EMAIL_REGEXP)
     private String email;
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private RoleDTOEnum role;
     @NotBlank
     @NotNull
     @Size(max = MAXIMUM_ADDRESS_SIZE)

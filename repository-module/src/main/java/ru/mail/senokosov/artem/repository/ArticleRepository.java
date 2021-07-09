@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ArticleRepository extends GenericRepository<Long, Article> {
 
-    Long getCountArticle();
+    Long getCountArticles();
 
-    List<Article> findAll(int pageNumber, int pageSize);
+    List<Article> findAll(Integer startPosition, Integer maximumArticlesOnPage);
 }

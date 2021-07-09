@@ -2,179 +2,178 @@ package ru.mail.senokosov.artem.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.bytebuddy.utility.RandomString;
 import org.hibernate.service.spi.ServiceException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.mail.senokosov.artem.repository.PagingAndSortingRepository;
+import org.springframework.util.StringUtils;
 import ru.mail.senokosov.artem.repository.RoleRepository;
 import ru.mail.senokosov.artem.repository.UserRepository;
 import ru.mail.senokosov.artem.repository.model.Role;
 import ru.mail.senokosov.artem.repository.model.User;
-import ru.mail.senokosov.artem.service.MailSender;
+import ru.mail.senokosov.artem.repository.model.UserInfo;
 import ru.mail.senokosov.artem.service.UserService;
-import ru.mail.senokosov.artem.service.config.PasswordGenerator;
 import ru.mail.senokosov.artem.service.converter.UserConverter;
-import ru.mail.senokosov.artem.service.model.UserDTO;
+import ru.mail.senokosov.artem.service.model.PageDTO;
+import ru.mail.senokosov.artem.service.model.add.AddUserDTO;
+import ru.mail.senokosov.artem.service.model.add.AddUserInfoDTO;
+import ru.mail.senokosov.artem.service.model.show.ShowUserDTO;
+import ru.mail.senokosov.artem.service.model.show.ShowUserInfoDTO;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static ru.mail.senokosov.artem.service.constant.UserServiceConstants.PASSWORD_LENGTH;
+import static ru.mail.senokosov.artem.service.constant.UserPaginateConstant.MAXIMUM_USERS_ON_PAGE;
+import static ru.mail.senokosov.artem.service.util.ServiceUtil.generateRandomPassword;
+import static ru.mail.senokosov.artem.service.util.ServiceUtil.getPageDTO;
 
+@RequiredArgsConstructor
 @Log4j2
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final UserConverter userConverter;
-    private final ThreadLocal<PagingAndSortingRepository> pagingAndSortingRepository = new ThreadLocal<PagingAndSortingRepository>();
-    private final JavaMailSender javaMailSender;
-    private final PasswordGenerator passwordGenerator;
-    private final MailSender mailSender;
     private final RoleRepository roleRepository;
+    private final UserConverter userConverter;
     private final PasswordEncoder passwordEncoder;
 
-
-    @Override
-    public Page<User> findPaginated(int pageNo, int pageSize, String sortField, String sortDirection) {
-        Sort sort = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortField).ascending() :
-                Sort.by(sortField).descending();
-
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
-        return this.pagingAndSortingRepository.get().findAll(pageable);
-    }
-
     @Override
     @Transactional
-    public List<UserDTO> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return users.stream()
+    public PageDTO getUsersByPage(Integer page) {
+        Long countUsers = userRepository.getCountUsers();
+        PageDTO pageDTO = getPageDTO(page, countUsers, MAXIMUM_USERS_ON_PAGE);
+        List<User> users = userRepository.findAll(pageDTO.getStartPosition(), MAXIMUM_USERS_ON_PAGE);
+        pageDTO.getUsers().addAll(users.stream()
                 .map(userConverter::convert)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+        return pageDTO;
     }
 
     @Override
     @Transactional
-    public User findUserByEmail(String email) {
-        return userRepository.findUserByEmail(email);
-    }
-
-    @Override
-    public UserDTO getUserById(Long id) {
-        User user = userRepository.findById(id);
-        return userConverter.convert(user);
-    }
-
-    @Override
-    public SimpleMailMessage persist(UserDTO userDTO) throws ServiceException {
-        User userByEmail = userRepository.findUserByEmail(userDTO.getEmail());
-        SimpleMailMessage message = new SimpleMailMessage();
-        if (Objects.isNull(userByEmail)) {
-            User user = userConverter.convert(userDTO);
-            String password = RandomString.make(PASSWORD_LENGTH);
-            String encodedPassword = passwordEncoder.encode(password);
-            user.setPassword(encodedPassword);
-            UUID uuid = UUID.randomUUID();
-            user.setUuid(uuid);
-
-            Role role = roleRepository.findById(Long.valueOf(userDTO.getRoleName()));
+    public ShowUserDTO persist(AddUserDTO addUserDTO) throws ServiceException {
+        User userByUsername = userRepository.findUserByUsername(addUserDTO.getEmail());
+        if (Objects.isNull(userByUsername)) {
+            String roleName = addUserDTO.getRole().name();
+            Role role = roleRepository.findByRoleName(roleName);
             if (Objects.nonNull(role)) {
+                User user = userConverter.convert(addUserDTO);
                 user.setRole(role);
+                String randomPassword = generateRandomPassword();
+                String encodePassword = passwordEncoder.encode(randomPassword);
+                user.setPassword(encodePassword);
+                userRepository.persist(user);
+                ShowUserDTO showUserDTO = userConverter.convert(user);
+                showUserDTO.setPassword(randomPassword);
+                return showUserDTO;
             } else {
-                throw new ServiceException("Role does not exist");
-            }
-            userRepository.persist(user);
-            if (!user.getEmail().isBlank()) {
-                mailSender.send(user.getEmail(), password);
+                throw new ServiceException(String.format("User with role: %s was not found", addUserDTO.getRole().name()));
             }
         } else {
-            throw new ServiceException("User with email: " + userDTO.getEmail() + " already exist");
-        }
-        return message;
-    }
-
-    @Override
-    public void addUserAndSendPasswordToEmail(UserDTO userDTO) throws ServiceException {
-        SimpleMailMessage message = persist(userDTO);
-        if (Objects.nonNull(message)) {
-            javaMailSender.send(message);
+            throw new ServiceException(String.format("User with username: %s already exists", addUserDTO.getEmail()));
         }
     }
 
     @Override
-    public boolean deleteUserById(Long id) throws SecurityException {
+    @Transactional
+    public boolean isDeleteById(Long id) {
+        userRepository.removeById(id);
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public ShowUserDTO resetPassword(Long id) throws ServiceException {
         User user = userRepository.findById(id);
         if (Objects.nonNull(user)) {
-            userRepository.remove(user);
-            return true;
-        } else {
-            throw new ServiceException("User does not exist");
-        }
-    }
-
-    @Override
-    public SimpleMailMessage resetPassword(Long id) {
-        User user = userRepository.findById(id);
-        SimpleMailMessage message = new SimpleMailMessage();
-        if (Objects.nonNull(user)) {
-            String randomPassword = passwordGenerator.generateStrongPassword();
+            String randomPassword = generateRandomPassword();
             String encodePassword = passwordEncoder.encode(randomPassword);
             user.setPassword(encodePassword);
-            String firstName = user.getFirstname();
-            String email = user.getEmail();
-            message = getMailMessageForResetPassword(firstName, randomPassword, email);
             userRepository.merge(user);
-        }
-        return message;
-    }
-
-    @Override
-    public UserDTO changeRoleById(UserDTO userDTO, Long roleId) throws ServiceException {
-        User user = userRepository.findById(userDTO.getId());
-        if (Objects.nonNull(user)) {
-            Role role = roleRepository.findById(roleId);
-            user.setRole(role);
-            userRepository.merge(user);
+            ShowUserDTO showUserDTO = userConverter.convert(user);
+            showUserDTO.setPassword(randomPassword);
+            return showUserDTO;
         } else {
-            throw new ServiceException("User does not exist");
+            throw new ServiceException(String.format("User with id: %s was not found", id));
         }
-        return userConverter.convert(user);
     }
 
     @Override
-    public void resetPasswordAndSendToEmail(Long id) {
-        SimpleMailMessage message = resetPassword(id);
-        if (Objects.nonNull(message)) {
-            javaMailSender.send(message);
+    @Transactional
+    public ShowUserDTO changeRoleById(String roleName, Long id) throws ServiceException {
+        Role roleByRoleName = roleRepository.findByRoleName(roleName);
+        if (Objects.nonNull(roleByRoleName)) {
+            User user = userRepository.findById(id);
+            if (Objects.nonNull(user)) {
+                roleByRoleName.getUsers().add(user);
+                userRepository.merge(user);
+                return userConverter.convert(user);
+            } else {
+                throw new ServiceException(String.format("User with id: %s was not found", id));
+            }
+        } else {
+            throw new ServiceException(String.format("User with role: %s was not found", roleName));
         }
     }
 
-    private SimpleMailMessage getMailMessageForAddUser(String email, String randomPassword, String recipientMail) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(recipientMail);
-        message.setSubject("Your registration password");
-        message.setText("Hello, your account " + email + " has been successfully created:" +
-                "your password: " + randomPassword);
-        return message;
+    @Override
+    @Transactional
+    public ShowUserInfoDTO getUserByUserName(String userName) throws ServiceException {
+        User user = userRepository.findUserByUsername(userName);
+        if (Objects.nonNull(user)) {
+            return userConverter.convertUserToUserDetailsDTO(user);
+        } else {
+            throw new ServiceException(String.format("User with username: %s was not found", userName));
+        }
     }
 
-    private SimpleMailMessage getMailMessageForResetPassword(String firsName, String randomPassword, String recipientMail) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(recipientMail);
-        message.setSubject("Your new password");
-        message.setText("Hello " + firsName + ", your password has been successfully reset:" +
-                "your new password: " + randomPassword);
-        return message;
+    @Override
+    @Transactional
+    public ShowUserInfoDTO changeParameterById(AddUserInfoDTO addUserInfoDTO) throws ServiceException {
+        User user = userRepository.findById(addUserInfoDTO.getId());
+        if (Objects.nonNull(user)) {
+            User changeUser = changeUserFields(addUserInfoDTO, user);
+            userRepository.merge(changeUser);
+            return userConverter.convertUserToUserDetailsDTO(changeUser);
+        } else {
+            throw new ServiceException(String.format("User with id: %s was not found", addUserInfoDTO.getId()));
+        }
+    }
+
+    private User changeUserFields(AddUserInfoDTO addUserInfoDTO, User user) throws ServiceException {
+        String firstName = addUserInfoDTO.getFirstName();
+        if (StringUtils.hasText(firstName)) {
+            user.setFirstName(firstName);
+        }
+        String lastName = addUserInfoDTO.getLastName();
+        if (StringUtils.hasText(lastName)) {
+            user.setLastName(lastName);
+        }
+        String address = addUserInfoDTO.getAddress();
+        if (StringUtils.hasText(address)) {
+            UserInfo userInfo = (UserInfo) user.getUserInfo();
+            userInfo.setAddress(address);
+            user.setUserInfo(userInfo);
+        }
+        String telephone = addUserInfoDTO.getTelephone();
+        if (StringUtils.hasText(telephone)) {
+            UserInfo userInfo = (UserInfo) user.getUserInfo();
+            userInfo.setTelephone(telephone);
+            user.setUserInfo(userInfo);
+        }
+        String oldPassword = addUserInfoDTO.getOldPassword();
+        String newPassword = addUserInfoDTO.getNewPassword();
+        if (StringUtils.hasText(oldPassword) && StringUtils.hasText(newPassword)) {
+            String userPassword = user.getPassword();
+            if (passwordEncoder.matches(oldPassword, userPassword)) {
+                log.info(passwordEncoder.matches(oldPassword, userPassword));
+                String encodePassword = passwordEncoder.encode(addUserInfoDTO.getNewPassword());
+                user.setPassword(encodePassword);
+            } else {
+                throw new ServiceException("The current password was entered incorrectly");
+            }
+        }
+        return user;
     }
 }

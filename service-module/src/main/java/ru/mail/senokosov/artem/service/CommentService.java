@@ -1,13 +1,12 @@
 package ru.mail.senokosov.artem.service;
 
+import ru.mail.senokosov.artem.service.exception.ServiceException;
 import ru.mail.senokosov.artem.service.model.add.AddCommentDTO;
 import ru.mail.senokosov.artem.service.model.show.ShowCommentDTO;
 
-import java.util.List;
-
 public interface CommentService {
 
-    List<ShowCommentDTO> getAllComments();
+    ShowCommentDTO persist(AddCommentDTO addCommentDTO, Long articleId) throws ServiceException;
 
-    void persist(AddCommentDTO addCommentDTO, String userName, Long articleId);
+    boolean isDeleteById(Long id);
 }

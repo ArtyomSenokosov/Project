@@ -1,6 +1,5 @@
 package ru.mail.senokosov.artem.service.model;
 
-import liquibase.pro.packaged.S;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -8,7 +7,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import static ru.mail.senokosov.artem.service.constant.UserServiceConstants.MAXIMUM_LAST_NAME_SIZE;
 import static ru.mail.senokosov.artem.service.constant.UserValidationConstant.*;
 
 @Data

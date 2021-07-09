@@ -9,7 +9,6 @@ import ru.mail.senokosov.artem.repository.model.User;
 import ru.mail.senokosov.artem.service.converter.ArticleConverter;
 import ru.mail.senokosov.artem.service.converter.CommentConverter;
 import ru.mail.senokosov.artem.service.model.add.AddArticleDTO;
-import ru.mail.senokosov.artem.service.model.ArticleDTO;
 import ru.mail.senokosov.artem.service.model.show.ShowArticleDTO;
 import ru.mail.senokosov.artem.service.model.show.ShowCommentDTO;
 
@@ -40,12 +39,14 @@ public class ArticleConverterImpl implements ArticleConverter {
             showArticleDTO.setDate(formatDateTime);
         }
         String title = article.getTitle();
-        showArticleDTO.setTitle(title);
+        if (Objects.nonNull(title)) {
+            showArticleDTO.setTitle(title);
+        }
         User user = article.getUser();
         if (Objects.nonNull(user)) {
-            String firstName = user.getFirstname();
+            String firstName = user.getFirstName();
             showArticleDTO.setFirstName(firstName);
-            String lastName = user.getSecondname();
+            String lastName = user.getLastName();
             showArticleDTO.setLastName(lastName);
         }
         String fullContent = article.getFullContent();
@@ -55,17 +56,17 @@ public class ArticleConverterImpl implements ArticleConverter {
         }
         Set<Comment> comments = article.getComments();
         if (!comments.isEmpty()) {
-            List<ShowCommentDTO> commentsDTO = comments.stream()
+            List<ShowCommentDTO> commentDTOs = comments.stream()
                     .map(commentConverter::convert)
                     .collect(Collectors.toList());
-            showArticleDTO.getComments().addAll(commentsDTO);
+            showArticleDTO.getComments().addAll(commentDTOs);
         }
         return showArticleDTO;
     }
 
     private void addShortContent(ShowArticleDTO showArticleDTO, String fullContent) {
         if (fullContent.length() > MAXIMUM_CHARS_FOR_SHORT_CONTENT_FIELD) {
-            String shortContent = fullContent.substring(1, MAXIMUM_CHARS_FOR_SHORT_CONTENT_FIELD);
+            String shortContent = fullContent.substring(0, MAXIMUM_CHARS_FOR_SHORT_CONTENT_FIELD);
             showArticleDTO.setShortContent(shortContent);
         } else {
             showArticleDTO.setShortContent(fullContent);
@@ -79,24 +80,6 @@ public class ArticleConverterImpl implements ArticleConverter {
         article.setTitle(title);
         String content = addArticleDTO.getContent();
         article.setFullContent(content);
-        LocalDateTime localDateTime = LocalDateTime.now();
-        article.setLocalDateTime(localDateTime);
         return article;
-    }
-
-    @Override
-    public ArticleDTO convertToChange(Article article) {
-        ArticleDTO articleDTO = new ArticleDTO();
-        Long id = article.getId();
-        articleDTO.setId(id);
-        LocalDateTime localDateTime = LocalDateTime.now();
-        articleDTO.setLocalDateTime(localDateTime);
-        if (Objects.nonNull(article)) {
-            String title = article.getTitle();
-            articleDTO.setTitle(title);
-            String fullContent = article.getFullContent();
-            articleDTO.setFullContent(fullContent);
-        }
-        return articleDTO;
     }
 }

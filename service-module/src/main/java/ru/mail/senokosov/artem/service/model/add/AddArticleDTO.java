@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import static ru.mail.senokosov.artem.service.constant.ArticleConstant.MAXIMUM_CHARS_FOR_FULL_CONTENT_FIELD;
 import static ru.mail.senokosov.artem.service.constant.ArticleConstant.MAXIMUM_CHARS_FOR_TITLE_FIELD;
 
 @Data
@@ -18,7 +19,7 @@ public class AddArticleDTO {
     private String title;
     @NotBlank
     @NotNull
-    @Size(max = MAXIMUM_CHARS_FOR_TITLE_FIELD, message = "Full content must be between 1 and 1000 characters")
+    @Size(max = MAXIMUM_CHARS_FOR_FULL_CONTENT_FIELD, message = "Full content must be between 1 and 1000 characters")
     private String content;
-    private Long userId;
+    private Long sellerId;
 }

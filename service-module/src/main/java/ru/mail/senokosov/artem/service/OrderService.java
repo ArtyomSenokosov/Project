@@ -1,22 +1,22 @@
 package ru.mail.senokosov.artem.service;
 
 import org.hibernate.service.spi.ServiceException;
-import org.springframework.data.domain.Page;
-import ru.mail.senokosov.artem.service.model.add.AddOrderDTO;
-import ru.mail.senokosov.artem.service.model.OrderDTO;
+import ru.mail.senokosov.artem.service.model.OrderItemDTO;
+import ru.mail.senokosov.artem.service.model.PageDTO;
+import ru.mail.senokosov.artem.service.model.show.ShowItemDTO;
 import ru.mail.senokosov.artem.service.model.show.ShowOrderDTO;
 
 import java.util.List;
 
 public interface OrderService {
 
-    Page<ShowOrderDTO> findPaginated(int pageNo, int pageSize, String sortField, String sortDirection);
+    List<ShowOrderDTO> getOrders();
 
-    List<ShowOrderDTO> getAllOrders();
+    PageDTO getOrdersByPage(int page);
 
-    ShowOrderDTO getOrderById(Long id);
+    ShowOrderDTO getOrderById(Long id) throws ServiceException;
 
-    void persist(AddOrderDTO addOrderDTO);
+    ShowOrderDTO changeStatusById(String status, Long id) throws ServiceException;
 
-    OrderDTO changeStatusById(OrderDTO orderDTO) throws ServiceException;
+    ShowOrderDTO persist(ShowItemDTO showItemDTO, OrderItemDTO orderItemDTO) throws ServiceException;
 }

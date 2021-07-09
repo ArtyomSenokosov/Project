@@ -6,11 +6,13 @@ public interface GenericRepository<I, T> {
 
     void persist(T entity);
 
-    void merge(T entity);
-
-    void remove(T entity);
+    void detach(T entity);
 
     T findById(I id);
 
     List<T> findAll();
+
+    void removeById(I id);
+
+    void merge(T entity);
 }

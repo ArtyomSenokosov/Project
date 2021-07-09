@@ -6,9 +6,11 @@ import lombok.Data;
 public class ShowUserDTO {
 
     private Long id;
-    private String secondname;
-    private String firstname;
-    private String middlename;
+    private String lastName;
+    private String firstName;
+    private String middleName;
     private String email;
-    private String role;
+    private String roleName;
+    private String password;
+    private String encryptedPassword;
 }

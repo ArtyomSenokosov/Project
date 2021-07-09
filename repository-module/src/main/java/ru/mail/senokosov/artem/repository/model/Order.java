@@ -1,34 +1,43 @@
 package ru.mail.senokosov.artem.repository.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
-    @Column(name = "order_number")
-    private Long orderNumber;
-    @ManyToOne(optional = false)
+    @Type(type = "uuid-char")
+    @Column(name = "number_of_order")
+    private UUID numberOfOrder;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_status_id")
     private OrderStatus orderStatus;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @Column(name = "number_of_items")
+    private Long numberOfItems;
+    @Column(name = "total_price")
+    private BigDecimal totalPrice;
+    @Column(name = "date")
+    private LocalDateTime localDateTime;
+    @OneToOne(fetch = FetchType.LAZY,
+            mappedBy = "order",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private OrderInfo orderInfo;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
-    @Column(name = "quantity")
-    private Long quantity;
-    @Column(name = "total_price")
-    private Long totalPrice;
-    @ManyToOne(optional = false)
-    @JoinTable(name = "user_id")
-    private User user;
-    @ManyToOne(optional = false)
-    @JoinTable(name = "user_details_id")
-    private UserInfo userInfo;
 }

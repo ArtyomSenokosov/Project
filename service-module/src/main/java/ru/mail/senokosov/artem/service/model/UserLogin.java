@@ -1,5 +1,7 @@
 package ru.mail.senokosov.artem.service.model;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,19 +11,17 @@ import ru.mail.senokosov.artem.repository.model.User;
 import java.util.Collection;
 import java.util.HashSet;
 
+@Log4j2
+@RequiredArgsConstructor
 public class UserLogin implements UserDetails {
 
-    private User user;//UserDTO
-
-    public UserLogin(User user) {//userrepository
-        this.user = user;
-    }
+    private final User user;
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {//поиск из базы данных finduser
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new HashSet<>();
         Role role = user.getRole();
-        GrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(role.getRole().name());
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(role.getRoleName());
         authorities.add(simpleGrantedAuthority);
         return authorities;
     }

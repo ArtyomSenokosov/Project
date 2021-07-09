@@ -1,18 +1,15 @@
 package ru.mail.senokosov.artem.service.converter;
 
 import ru.mail.senokosov.artem.repository.model.User;
-import ru.mail.senokosov.artem.service.model.UserDTO;
-import ru.mail.senokosov.artem.service.model.UserInfoDTO;
-
-import java.util.List;
+import ru.mail.senokosov.artem.service.model.add.AddUserDTO;
+import ru.mail.senokosov.artem.service.model.show.ShowUserDTO;
+import ru.mail.senokosov.artem.service.model.show.ShowUserInfoDTO;
 
 public interface UserConverter {
 
-    List<UserDTO> convert(List<User> users);
+    ShowUserDTO convert(User user);
 
-    User convert(UserDTO userDTO);
+    User convert(AddUserDTO addUserDTO);
 
-    UserDTO convert(User user);
-
-    UserInfoDTO convertUserToUserDetailsDTO(User user);
+    ShowUserInfoDTO convertUserToUserDetailsDTO(User user);
 }

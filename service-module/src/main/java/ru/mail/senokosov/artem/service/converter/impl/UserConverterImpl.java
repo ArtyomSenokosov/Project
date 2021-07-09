@@ -1,77 +1,78 @@
 package ru.mail.senokosov.artem.service.converter.impl;
 
-import liquibase.pro.packaged.S;
 import org.springframework.stereotype.Component;
 import ru.mail.senokosov.artem.repository.model.Role;
 import ru.mail.senokosov.artem.repository.model.User;
 import ru.mail.senokosov.artem.repository.model.UserInfo;
 import ru.mail.senokosov.artem.service.converter.UserConverter;
-import ru.mail.senokosov.artem.service.model.UserDTO;
-import ru.mail.senokosov.artem.service.model.UserInfoDTO;
+import ru.mail.senokosov.artem.service.model.add.AddUserDTO;
+import ru.mail.senokosov.artem.service.model.show.ShowUserDTO;
+import ru.mail.senokosov.artem.service.model.show.ShowUserInfoDTO;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Component
 public class UserConverterImpl implements UserConverter {
 
-    public List<UserDTO> convert(List<User> users) {
-        return users.stream()
-                .map(this::convert)
-                .collect(Collectors.toList());
+    @Override
+    public ShowUserDTO convert(User user) {
+        ShowUserDTO showUserDTO = new ShowUserDTO();
+        Long id = user.getId();
+        showUserDTO.setId(id);
+        String lastName = user.getLastName();
+        showUserDTO.setLastName(lastName);
+        String firstName = user.getFirstName();
+        showUserDTO.setFirstName(firstName);
+        String middleName = user.getMiddleName();
+        showUserDTO.setMiddleName(middleName);
+        String email = user.getEmail();
+        showUserDTO.setEmail(email);
+
+        if (Objects.nonNull(user.getRole())) {
+            Role role = user.getRole();
+            String roleName = role.getRoleName();
+            showUserDTO.setRoleName(roleName);
+        }
+        return showUserDTO;
     }
 
     @Override
-    public User convert(UserDTO userDTO) {
+    public User convert(AddUserDTO addUserDTO) {
         User user = new User();
-        String secondname = userDTO.getSecondname();
-        user.setSecondname(secondname);
-        String firstname = userDTO.getFirstname();
-        user.setFirstname(firstname);
-        String middlename = userDTO.getMiddlename();
-        user.setMiddlename(middlename);
-        String email = userDTO.getEmail();
+        String lastName = addUserDTO.getLastName();
+        user.setLastName(lastName);
+        String firstName = addUserDTO.getFirstName();
+        user.setFirstName(firstName);
+        String middleName = addUserDTO.getMiddleName();
+        user.setMiddleName(middleName);
+        String email = addUserDTO.getEmail();
         user.setEmail(email);
+        UserInfo userInfo = new UserInfo();
+        String address = addUserDTO.getAddress();
+        userInfo.setAddress(address);
+        String telephone = addUserDTO.getTelephone();
+        userInfo.setTelephone(telephone);
+        userInfo.setUser(user);
+        user.setUserInfo(userInfo);
         return user;
     }
 
     @Override
-    public UserDTO convert(User user) {
-        UserDTO userDTO = new UserDTO();
+    public ShowUserInfoDTO convertUserToUserDetailsDTO(User user) {
+        ShowUserInfoDTO showUserInfoDTO = new ShowUserInfoDTO();
         Long id = user.getId();
-        userDTO.setId(id);
-        String secondname = user.getSecondname();
-        userDTO.setSecondname(secondname);
-        String firstname = user.getFirstname();
-        userDTO.setFirstname(firstname);
-        String middlename = user.getMiddlename();
-        userDTO.setMiddlename(middlename);
-        String email = user.getEmail();
-        userDTO.setEmail(email);
-        String password = user.getPassword();
-        userDTO.setPassword(password);
-        Role role = user.getRole();
-        userDTO.setRoleName(String.valueOf(role));
-        return userDTO;
-    }
-
-    @Override
-    public UserInfoDTO convertUserToUserDetailsDTO(User user) {
-        UserInfoDTO userInfoDTO = new UserInfoDTO();
-        Long id = user.getId();
-        userInfoDTO.setId(id);
-        String firstName = user.getFirstname();
-        userInfoDTO.setFirstName(firstName);
-        String lastName = user.getSecondname();
-        userInfoDTO.setLastName(lastName);
-        UserInfo userInfo = user.getUserInfo();
+        showUserInfoDTO.setId(id);
+        String firstName = user.getFirstName();
+        showUserInfoDTO.setFirstName(firstName);
+        String lastName = user.getLastName();
+        showUserInfoDTO.setLastName(lastName);
+        UserInfo userInfo = (UserInfo) user.getUserInfo();
         if (Objects.nonNull(userInfo)) {
             String address = userInfo.getAddress();
-            userInfoDTO.setAddress(address);
+            showUserInfoDTO.setAddress(address);
             String telephone = userInfo.getTelephone();
-            userInfoDTO.setTelephone(telephone);
+            showUserInfoDTO.setTelephone(telephone);
         }
-        return userInfoDTO;
+        return showUserInfoDTO;
     }
 }

@@ -1,33 +1,25 @@
 package ru.mail.senokosov.artem.service;
 
 import org.hibernate.service.spi.ServiceException;
-import org.springframework.data.domain.Page;
-import org.springframework.mail.SimpleMailMessage;
-import ru.mail.senokosov.artem.repository.model.User;
 import ru.mail.senokosov.artem.service.model.*;
 import ru.mail.senokosov.artem.service.model.add.AddUserDTO;
-
-import java.util.List;
+import ru.mail.senokosov.artem.service.model.add.AddUserInfoDTO;
+import ru.mail.senokosov.artem.service.model.show.ShowUserDTO;
+import ru.mail.senokosov.artem.service.model.show.ShowUserInfoDTO;
 
 public interface UserService {
 
-    Page<User> findPaginated(int pageNo, int pageSize, String sortField, String sortDirection);
+    PageDTO getUsersByPage(Integer page);
 
-    List<UserDTO> getAllUsers();
+    ShowUserDTO persist(AddUserDTO addUserDTO) throws ServiceException;
 
-    User findUserByEmail(String email);
+    boolean isDeleteById(Long id);
 
-    UserDTO getUserById(Long id);
+    ShowUserDTO resetPassword(Long id) throws ServiceException;
 
-    SimpleMailMessage persist(UserDTO userDTO) throws ServiceException;
+    ShowUserDTO changeRoleById(String roleName, Long id) throws ServiceException;
 
-    void addUserAndSendPasswordToEmail(UserDTO userDTO) throws ServiceException;
+    ShowUserInfoDTO getUserByUserName(String userName) throws ServiceException;
 
-    boolean deleteUserById(Long id) throws SecurityException;
-
-    SimpleMailMessage resetPassword(Long id);
-
-    UserDTO changeRoleById(UserDTO userDTO, Long roleId) throws ServiceException;
-
-    void resetPasswordAndSendToEmail(Long id);
+    ShowUserInfoDTO changeParameterById(AddUserInfoDTO addUserInfoDTO) throws ServiceException;
 }

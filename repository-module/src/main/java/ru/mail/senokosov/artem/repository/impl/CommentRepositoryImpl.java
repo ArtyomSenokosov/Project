@@ -13,7 +13,7 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
-import static ru.mail.senokosov.artem.repository.constant.RepositoryConstants.ARTICLE_PARAMETER;
+import static ru.mail.senokosov.artem.repository.constant.RepositoryConstants.DATE_PARAMETER;
 
 @Repository
 @Log4j2
@@ -24,16 +24,16 @@ public class CommentRepositoryImpl extends GenericRepositoryImpl<Long, Comment> 
     public List<Comment> findCommentByArticleId(Long id) {
         try {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-            CriteriaQuery<Comment> query = criteriaBuilder.createQuery(Comment.class);
-            Root<Comment> commentRoot = query.from(Comment.class);
-            query.select(commentRoot);
+            CriteriaQuery<Comment> commentQuery = criteriaBuilder.createQuery(Comment.class);
+            Root<Comment> commentRoot = commentQuery.from(Comment.class);
+            commentQuery.select(commentRoot);
             ParameterExpression<Long> parameter = criteriaBuilder.parameter(Long.class);
-            query.where(criteriaBuilder.equal(commentRoot.get(ARTICLE_PARAMETER), parameter));
-            TypedQuery<Comment> typedQuery = entityManager.createQuery(query);
-            typedQuery.setParameter(parameter, id);
+            commentQuery.where(criteriaBuilder.equal(commentRoot.get(DATE_PARAMETER), parameter));
+            TypedQuery<Comment> typedQuery = entityManager.createQuery(commentQuery);
+            typedQuery.setParameter(String.valueOf(parameter), id);
             return typedQuery.getResultList();
         } catch (NoResultException e) {
-            log.info("Comment does not exist");
+            log.error(e.getMessage(), e);
             return null;
         }
     }

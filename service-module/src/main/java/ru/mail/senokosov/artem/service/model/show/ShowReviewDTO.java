@@ -6,11 +6,10 @@ import lombok.Data;
 public class ShowReviewDTO {
 
     private Long id;
-    private String firstname;
-    private String secondname;
-    private String middlename;
-    private String date;
-    private String topic;
+    private String lastName;
+    private String firstName;
+    private String middleName;
     private String review;
-
+    private String localDateTime;
+    private String status;
 }

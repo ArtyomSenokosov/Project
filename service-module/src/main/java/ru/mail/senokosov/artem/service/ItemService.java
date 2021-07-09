@@ -1,22 +1,28 @@
 package ru.mail.senokosov.artem.service;
 
-import org.springframework.data.domain.Page;
+import ru.mail.senokosov.artem.service.exception.ServiceException;
+import ru.mail.senokosov.artem.service.model.PageDTO;
 import ru.mail.senokosov.artem.service.model.add.AddItemDTO;
 import ru.mail.senokosov.artem.service.model.show.ShowItemDTO;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ItemService {
 
-    Page<ShowItemDTO> findPaginated(int pageNo, int pageSize, String sortField, String sortDirection);
+    PageDTO getItemsByPage(int page);
 
-    List<ShowItemDTO> getAllItems();
+    List<ShowItemDTO> getItems();
 
-    ShowItemDTO getItemById(Long id);
+    ShowItemDTO getItemById(Long id) throws ServiceException;
 
-    void persist(AddItemDTO addItemDTO);
+    ShowItemDTO persist(AddItemDTO addItemDTO);
 
-    boolean deleteItemById(Long id) throws SecurityException;
+    boolean isDeleteById(Long id);
 
-    boolean copyItemById(Long id) throws SecurityException;
+    ShowItemDTO getItemByUuid(UUID uuid) throws ServiceException;
+
+    boolean isDeleteByUuid(UUID uuid) throws ServiceException;
+
+    ShowItemDTO CopyItemByUuid(UUID uuid) throws ServiceException;
 }

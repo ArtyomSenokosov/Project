@@ -12,18 +12,15 @@ public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
-    @Column(name = "topic")
-    private String topic;
-    @Column(name = "review")
-    private String review;
     @Column(name = "date")
     private LocalDateTime localDate;
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "status_id")
-    private ReviewStatus reviewStatus;
-    @ManyToOne(optional = false)
-    @JoinTable(name = "re_user")
+    @Column(name = "review")
+    private String review;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "user_id")
     private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id")
+    private Status status;
 }

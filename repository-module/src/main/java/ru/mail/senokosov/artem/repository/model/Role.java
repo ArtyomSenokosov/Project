@@ -1,9 +1,12 @@
 package ru.mail.senokosov.artem.repository.model;
 
 import lombok.Data;
-import ru.mail.senokosov.artem.repository.model.enums.RoleEnum;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -12,9 +15,12 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
-    @Column(name = "role")
-    @Enumerated(EnumType.STRING)
-    private RoleEnum role;
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
+    @JoinColumn(name = "role_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<User> users = new HashSet<>();
+    @Column(name = "role_name")
+    private String roleName;
 }

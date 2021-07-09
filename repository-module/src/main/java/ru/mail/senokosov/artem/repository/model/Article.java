@@ -24,10 +24,10 @@ public class Article {
     @Column(name = "content")
     private String fullContent;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "seller_id")
+    @JoinColumn(name = "user_id")
     private User user;
-    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JoinColumn(name = "comment_id")
+    @OneToMany(cascade = CascadeType.REFRESH, orphanRemoval = true)
+    @JoinColumn(name = "article_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<Comment> comments = new HashSet<>();

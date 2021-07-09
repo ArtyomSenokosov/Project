@@ -6,8 +6,7 @@ import lombok.Data;
 public class ShowCommentDTO {
 
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String fullName;
     private String date;
     private String fullContent;
 }

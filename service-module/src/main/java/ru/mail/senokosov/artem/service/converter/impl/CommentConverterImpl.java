@@ -1,7 +1,6 @@
 package ru.mail.senokosov.artem.service.converter.impl;
 
 import org.springframework.stereotype.Component;
-import ru.mail.senokosov.artem.repository.model.Article;
 import ru.mail.senokosov.artem.repository.model.Comment;
 import ru.mail.senokosov.artem.repository.model.User;
 import ru.mail.senokosov.artem.service.converter.CommentConverter;
@@ -30,19 +29,17 @@ public class CommentConverterImpl implements CommentConverter {
         showCommentDTO.setFullContent(fullContent);
         User user = comment.getUser();
         if (Objects.nonNull(user)) {
-            String firstName = user.getFirstname();
-            showCommentDTO.setFirstName(firstName);
-            String lastName = user.getSecondname();
-            showCommentDTO.setLastName(lastName);
+            String firstName = user.getFirstName();
+            String lastName = user.getLastName();
+            String fullName = String.format("%s %s", firstName, lastName);
+            showCommentDTO.setFullName(fullName);
         }
         return showCommentDTO;
     }
 
     @Override
-    public Comment convert(AddCommentDTO addCommentDTO, User user, Article article) {
+    public Comment convert(AddCommentDTO addCommentDTO) {
         Comment comment = new Comment();
-        comment.setArticle(article);
-        comment.setUser(user);
         LocalDateTime localDateTime = LocalDateTime.now();
         comment.setLocalDateTime(localDateTime);
         String fullContent = addCommentDTO.getFullContent();

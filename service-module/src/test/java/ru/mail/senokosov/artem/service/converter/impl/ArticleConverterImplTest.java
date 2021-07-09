@@ -1,6 +1,5 @@
 package ru.mail.senokosov.artem.service.converter.impl;
 
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,24 +22,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static ru.mail.senokosov.artem.service.constant.FormatConstant.DATE_FORMAT_PATTERN;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class ArticleConverterImplTest {
+class ArticleConverterImplTest {
 
     @Mock
     private CommentConverter commentConverter;
     @InjectMocks
     private ArticleConverterImpl articleConverter;
-
-    @Test
-    void shouldConvertArticleToShowArticleDTOAndReturnNotNullObject() {
-        Article article = new Article();
-        ShowArticleDTO showArticleDTO = articleConverter.convert(article);
-
-        assertNotNull(showArticleDTO);
-    }
 
     @Test
     void shouldConvertArticleToShowArticleDTOAndReturnRightId() {
@@ -67,7 +58,7 @@ public class ArticleConverterImplTest {
         Article article = new Article();
         LocalDateTime localDateTime = LocalDateTime.now();
         article.setLocalDateTime(localDateTime);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
         String formatLocalDate = formatter.format(localDateTime);
         ShowArticleDTO showArticleDTO = articleConverter.convert(article);
 
@@ -92,8 +83,8 @@ public class ArticleConverterImplTest {
         Comment comment = new Comment();
         Long commentId = 1L;
         comment.setId(commentId);
-        LocalDateTime localDateTime = LocalDateTime.now();
-        comment.setLocalDateTime(localDateTime);
+        LocalDateTime localDateTimeCommit = LocalDateTime.now();
+        comment.setLocalDateTime(localDateTimeCommit);
         String contentComment = "test content comment";
         comment.setFullContent(contentComment);
         comments.add(comment);
@@ -101,24 +92,24 @@ public class ArticleConverterImplTest {
         Comment comment2 = new Comment();
         Long commentId2 = 2L;
         comment2.setId(commentId2);
-        LocalDateTime localDateTime2 = LocalDateTime.now();
-        comment2.setLocalDateTime(localDateTime2);
+        LocalDateTime localDateTimeCommit2 = LocalDateTime.now();
+        comment2.setLocalDateTime(localDateTimeCommit2);
         String contentComment2 = "test content comment2";
         comment2.setFullContent(contentComment2);
         comments.add(comment2);
 
         Article article = new Article();
         article.setComments(comments);
-        List<ShowCommentDTO> commentDTOS = comments.stream()
+        List<ShowCommentDTO> commentDTOs = comments.stream()
                 .map(commentConverter::convert)
                 .collect(Collectors.toList());
         ShowArticleDTO showArticleDTO = articleConverter.convert(article);
 
-        assertEquals(commentDTOS, showArticleDTO.getComments());
+        assertEquals(commentDTOs, showArticleDTO.getComments());
     }
 
     @Test
-    void shouldConvertAddArticleDTOToArticleAndRightTitle() {
+    void shouldConvertAddArticleDTOToArticleAndReturnRightTitle() {
         AddArticleDTO addArticleDTO = new AddArticleDTO();
         String title = "test";
         addArticleDTO.setTitle(title);
@@ -138,10 +129,10 @@ public class ArticleConverterImplTest {
     }
 
     @Test
-    void shouldFormatLocalDateTime(){
-        LocalDateTime localDateTime = LocalDateTime.of(2021, 5, 8, 20,2, 55);
-        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formatData="2021-05-08 20:02:55";
+    void shouldFormatLocalDateTime() {
+        LocalDateTime localDateTime = LocalDateTime.of(2021, 7, 1, 00, 00, 00);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
+        String formatData = "2021-07-01 00:00:00";
         assertEquals(formatData, localDateTime.format(formatter));
     }
 }

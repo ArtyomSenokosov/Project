@@ -1,26 +1,24 @@
 package ru.mail.senokosov.artem.service;
 
 import org.hibernate.service.spi.ServiceException;
-import org.springframework.data.domain.Page;
+import ru.mail.senokosov.artem.service.model.change.ChangeArticleDTO;
+import ru.mail.senokosov.artem.service.model.PageDTO;
 import ru.mail.senokosov.artem.service.model.add.AddArticleDTO;
-import ru.mail.senokosov.artem.service.model.ArticleDTO;
 import ru.mail.senokosov.artem.service.model.show.ShowArticleDTO;
 
 import java.util.List;
 
 public interface ArticleService {
 
-    Page<ShowArticleDTO> findPaginated(int pageNo, int pageSize, String sortField, String sortDirection);
+    PageDTO getArticlesByPage(Integer page);
 
-    List<ShowArticleDTO> getAllArticles();
+    ShowArticleDTO getArticleById(Long id) throws ServiceException, ru.mail.senokosov.artem.service.exception.ServiceException;
 
-    ShowArticleDTO getArticleById(Long id);
+    List<ShowArticleDTO> getArticles();
 
-    void persist(AddArticleDTO addArticleDTO);
+    boolean isDeleteById(Long id) throws ServiceException;
 
-    boolean deleteArticleById(Long id) throws SecurityException;
+    ShowArticleDTO add(AddArticleDTO addArticleDTO) throws ServiceException, ru.mail.senokosov.artem.service.exception.ServiceException;
 
-    ArticleDTO changeTitleById(ArticleDTO articleDTO) throws ServiceException;
-
-    ArticleDTO changeContentById(ArticleDTO articleDTO) throws ServiceException;
+    ShowArticleDTO changeParameterById(ChangeArticleDTO changeArticleDTO, Long id) throws ServiceException, ru.mail.senokosov.artem.service.exception.ServiceException;
 }

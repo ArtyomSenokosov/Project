@@ -1,9 +1,14 @@
 package ru.mail.senokosov.artem.repository.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -13,17 +18,24 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
-    @Column(name = "name")
-    private String name;
-    @Column(name = "uuid")
+    @Column(name = "title")
+    private String title;
     @Type(type = "uuid-char")
+    @Column(name = "unique_number")
     private UUID uuid;
     @Column(name = "price")
-    private Long price;
-    @Column(name = "number")
-    private Long number;
-    @Column(name = "content")
-    private String content;
+    private BigDecimal price;
+    @OneToOne(fetch = FetchType.LAZY,
+            mappedBy = "item",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private ItemInfo itemInfo;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "item_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Order> orders = new HashSet<>();
 }

@@ -3,7 +3,6 @@ package ru.mail.senokosov.artem.service.model;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
-import ru.mail.senokosov.artem.repository.model.Role;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -29,5 +28,4 @@ public class UserDTO {
     private String email;
     private String password;
     private String roleName;
-
 }

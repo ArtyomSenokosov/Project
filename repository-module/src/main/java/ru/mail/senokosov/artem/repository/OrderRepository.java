@@ -6,9 +6,7 @@ import java.util.List;
 
 public interface OrderRepository extends GenericRepository<Long, Order> {
 
-    List<Order> findOrderByUserId(Long id);
+    Long getCountOrders();
 
-    Long getCountArticle();
-
-    List<Order> findAll(int pageNumber, int pageSize);
+    List<Order> findAll(Integer startPosition, int maximumOrdersOnPage);
 }

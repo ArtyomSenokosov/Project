@@ -6,22 +6,28 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ru.mail.senokosov.artem.repository.UserRepository;
 import ru.mail.senokosov.artem.repository.model.User;
-import ru.mail.senokosov.artem.service.UserService;
 import ru.mail.senokosov.artem.service.model.UserLogin;
 
+import javax.transaction.Transactional;
+import java.util.Objects;
+
 @Log4j2
-@Service
 @RequiredArgsConstructor
+@Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userService.findUserByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("User with email: %s was not found", email));
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        log.info("username:{}", username);
+        User user = userRepository.findUserByUsername(username);
+        log.info("user with username: {} found with role: {}", user.getEmail(), user.getRole());
+        if (Objects.isNull(user)) {
+            throw new UsernameNotFoundException("User with username: " + username + " was not found");
         }
         return new UserLogin(user);
     }

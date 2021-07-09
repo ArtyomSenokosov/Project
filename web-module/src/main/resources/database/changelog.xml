@@ -6,37 +6,27 @@
 
     <changeSet id="1" author="artem.senokosov@mail.ru">
         <createTable tableName="role">
-            <column name="id" type="int">
-                <constraints primaryKey="true"/>
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="role" type="varchar(60)">
+            <column name="role_name" type="varchar(20)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
 
     <changeSet id="2" author="artem.senokosov@mail.ru">
-        <addAutoIncrement columnDataType="int"
-                          columnName="id"
-                          incrementBy="1"
-                          tableName="role"/>
-    </changeSet>
-
-    <changeSet id="3" author="artem.senokosov@mail.ru">
         <createTable tableName="user">
-            <column name="id" type="int">
-                <constraints primaryKey="true"/>
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="uuid" type="int">
+            <column name="last_name" type="varchar(40)">
                 <constraints nullable="false"/>
             </column>
-            <column name="secondname" type="varchar(40)">
+            <column name="first_name" type="varchar(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="firstname" type="varchar(20)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="middlename" type="varchar(40)">
+            <column name="middle_name" type="varchar(40)">
                 <constraints nullable="false"/>
             </column>
             <column name="email" type="varchar(50)">
@@ -51,162 +41,98 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="3" author="artem.senokosov@mail.ru">
+        <addForeignKeyConstraint baseTableName="user" baseColumnNames="role_id"
+                                 constraintName="fk_user_role"
+                                 referencedTableName="role"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
     <changeSet id="4" author="artem.senokosov@mail.ru">
-        <addForeignKeyConstraint baseColumnNames="role_id"
-                                 baseTableName="user"
-                                 constraintName="fk_user_role_id"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="NO ACTION"
-                                 onUpdate="NO ACTION"
-                                 referencedColumnNames="id"
-                                 referencedTableName="role"/>
+        <insert tableName="role">
+            <column name="role_name" value="ADMINISTRATOR"/>
+        </insert>
+        <insert tableName="role">
+            <column name="role_name" value="SALE_USER"/>
+        </insert>
+        <insert tableName="role">
+            <column name="role_name" value="CUSTOMER_USER"/>
+        </insert>
+        <insert tableName="role">
+            <column name="role_name" value="SECURE_API_USER"/>
+        </insert>
     </changeSet>
 
     <changeSet id="5" author="artem.senokosov@mail.ru">
-        <createTable tableName="reviewStatus">
-            <column name="id" type="int">
-                <constraints primaryKey="true"/>
+        <createTable tableName="review">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="reviewStatus" type="varchar(60)">
+            <column name="date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="review" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="customer_id" type="int">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
 
     <changeSet id="6" author="artem.senokosov@mail.ru">
-        <addAutoIncrement columnDataType="int"
-                          columnName="id"
-                          incrementBy="1"
-                          tableName="reviewStatus"/>
+        <addForeignKeyConstraint baseTableName="review" baseColumnNames="customer_id"
+                                 constraintName="fk_review_customer"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"/>
     </changeSet>
 
     <changeSet id="7" author="artem.senokosov@mail.ru">
-        <createTable tableName="review">
-            <column name="id" type="int">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="topic" type="varchar(60)">
+        <addColumn tableName="review">
+            <column afterColumn="customer_id"
+                    name="status_id"
+                    type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="review" type="varchar(60)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="date" type="DATETIME">
-                <constraints nullable="false"/>
-            </column>
-            <column name="status_id" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="re_user" type="int">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+        </addColumn>
     </changeSet>
 
     <changeSet id="8" author="artem.senokosov@mail.ru">
-        <addForeignKeyConstraint baseColumnNames="status_id"
-                                 baseTableName="review"
-                                 constraintName="fk_review_status_id"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="NO ACTION"
-                                 onUpdate="NO ACTION"
-                                 referencedColumnNames="id"
-                                 referencedTableName="reviewStatus"/>
+        <createTable tableName="status_review">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 
     <changeSet id="9" author="artem.senokosov@mail.ru">
-        <addForeignKeyConstraint baseColumnNames="re_user"
-                                 baseTableName="review"
-                                 constraintName="fk_review_user_id"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="NO ACTION"
-                                 onUpdate="NO ACTION"
-                                 referencedColumnNames="id"
-                                 referencedTableName="user"/>
+        <addForeignKeyConstraint baseTableName="review" baseColumnNames="status_id"
+                                 constraintName="fk_review_status"
+                                 referencedTableName="status_review"
+                                 referencedColumnNames="id"/>
     </changeSet>
 
     <changeSet id="10" author="artem.senokosov@mail.ru">
-        <createTable tableName="user_details">
-            <column name="id" type="int">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="address" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="telephone" type="varchar(60)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="user_id" type="int">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+        <insert tableName="status_review">
+            <column name="status" value="SHOW"/>
+        </insert>
+        <insert tableName="status_review">
+            <column name="status" value="HIDE"/>
+        </insert>
     </changeSet>
 
     <changeSet id="11" author="artem.senokosov@mail.ru">
-        <addForeignKeyConstraint baseColumnNames="user_id"
-                                 baseTableName="user_details"
-                                 constraintName="fk_user_id"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="NO ACTION"
-                                 onUpdate="NO ACTION"
-                                 referencedColumnNames="id"
-                                 referencedTableName="user"/>
-    </changeSet>
-
-    <changeSet id="12" author="artem.senokosov@mail.ru">
-        <createTable tableName="comment">
-            <column name="id" type="int">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="date" type="DATETIME">
-                <constraints nullable="false"/>
-            </column>
-            <column name="content" type="varchar(200)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="customer_id" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="comment_id" type="int">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="13" author="artem.senokosov@mail.ru">
-        <addForeignKeyConstraint baseColumnNames="comment_id"
-                                 baseTableName="comment"
-                                 constraintName="fk_comment_id"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="NO ACTION"
-                                 onUpdate="NO ACTION"
-                                 referencedColumnNames="id"
-                                 referencedTableName="comment"/>
-    </changeSet>
-
-    <changeSet id="14" author="artem.senokosov@mail.ru">
-        <addForeignKeyConstraint baseColumnNames="customer_id"
-                                 baseTableName="comment"
-                                 constraintName="fk_customer_id"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="NO ACTION"
-                                 onUpdate="NO ACTION"
-                                 referencedColumnNames="id"
-                                 referencedTableName="user"/>
-    </changeSet>
-
-    <changeSet id="15" author="artem.senokosov@mail.ru">
         <createTable tableName="article">
-            <column name="id" type="int">
-                <constraints primaryKey="true"/>
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="date" type="DATETIME">
+            <column name="date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="varchar(20)">
                 <constraints nullable="false"/>
             </column>
             <column name="content" type="varchar(1000)">
@@ -215,158 +141,281 @@
             <column name="seller_id" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="comment_id" type="int">
-                <constraints nullable="false"/>
-            </column>
         </createTable>
     </changeSet>
 
-    <changeSet id="16" author="artem.senokosov@mail.ru">
-        <addForeignKeyConstraint baseColumnNames="seller_id"
-                                 baseTableName="article"
-                                 constraintName="fk_seller_id"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="NO ACTION"
-                                 onUpdate="NO ACTION"
-                                 referencedColumnNames="id"
-                                 referencedTableName="user"/>
+    <changeSet id="12" author="artem.senokosov@mail.ru">
+        <addForeignKeyConstraint baseTableName="article" baseColumnNames="seller_id"
+                                 constraintName="fk_article_seller"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="17" author="artem.senokosov@mail.ru">
-        <addForeignKeyConstraint baseColumnNames="comment_id"
-                                 baseTableName="article"
-                                 constraintName="fk_article_comment_id"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="NO ACTION"
-                                 onUpdate="NO ACTION"
-                                 referencedColumnNames="id"
-                                 referencedTableName="comment"/>
-    </changeSet>
-
-    <changeSet id="18" author="artem.senokosov@mail.ru">
-        <createTable tableName="order_status">
-            <column name="id" type="int">
-                <constraints primaryKey="true"/>
+    <changeSet id="13" author="artem.senokosov@mail.ru">
+        <createTable tableName="comment">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="status" type="varchar(60)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="19" author="artem.senokosov@mail.ru">
-        <addAutoIncrement columnDataType="int"
-                          columnName="id"
-                          incrementBy="1"
-                          tableName="order_status"/>
-    </changeSet>
-
-    <changeSet id="20" author="artem.senokosov@mail.ru">
-        <createTable tableName="item">
-            <column name="id" type="int">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="name" type="varchar(60)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="uuid" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="price" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="number" type="int">
+            <column name="date" type="datetime">
                 <constraints nullable="false"/>
             </column>
             <column name="content" type="varchar(200)">
                 <constraints nullable="false"/>
             </column>
+            <column name="customer_id" type="int">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 
-    <changeSet id="21" author="artem.senokosov@mail.ru">
-        <addAutoIncrement columnDataType="int"
-                          columnName="id"
-                          incrementBy="1"
-                          tableName="item"/>
+    <changeSet id="14" author="artem.senokosov@mail.ru">
+        <addForeignKeyConstraint baseTableName="comment" baseColumnNames="customer_id"
+                                 constraintName="fk_comment_customer"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="22" author="artem.senokosov@mail.ru">
-        <createTable tableName="order">
-            <column name="id" type="int">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="order_number" type="int">
+    <changeSet id="15" author="artem.senokosov@mail.ru">
+        <addColumn tableName="comment">
+            <column afterColumn="customer_id"
+                    name="article_id"
+                    type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="order_status_id" type="int">
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="16" author="artem.senokosov@mail.ru">
+        <addForeignKeyConstraint baseTableName="comment" baseColumnNames="article_id"
+                                 constraintName="fk_comment_article"
+                                 referencedTableName="article"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="17" author="artem.senokosov@mail.ru">
+        <createTable tableName="user_info">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="address" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="telephone" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="user_info" baseColumnNames="user_id"
+                                 constraintName="fk_user_info_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="18" author="artem.senokosov@mail.ru">
+        <insert tableName="user">
+            <column name="last_name" value="Senokosov"/>
+            <column name="first_name" value="Artyom"/>
+            <column name="middle_name" value="Sergeevich"/>
+            <column name="email" value="admin@gmail.com"/>
+            <column name="password" value="$2y$12$keSA6xr/80a9RN9ufZthMugHlQS.MamwJ6axIrGAMeRpj0aT6CoDq "/>
+            <column name="role_id" valueComputed="(SELECT id FROM role WHERE role_name = 'ADMINISTRATOR')"/>
+        </insert>
+        <insert tableName="user">
+            <column name="last_name" value="Belfort"/>
+            <column name="first_name" value="Jordan"/>
+            <column name="middle_name" value="Ross"/>
+            <column name="email" value="seller@gmail.com"/>
+            <column name="password" value="$2y$12$CFxRuxM6WU90zHlibQGOpeQ/Z9orA5/opc3vSP2Enu3QF7.Sa7Ib6 "/>
+            <column name="role_id" valueComputed="(SELECT id FROM role WHERE role_name = 'SALE_USER')"/>
+        </insert>
+        <insert tableName="user">
+            <column name="last_name" value="Zuckerberg"/>
+            <column name="first_name" value="Mark"/>
+            <column name="middle_name" value="Elliot"/>
+            <column name="email" value="customer@gmail.com"/>
+            <column name="password" value="$2y$12$u3sg5OMnwa1H15KGnoHDXOAAhaNxgDBhfEDixIRp0kPx794C/Ewj. "/>
+            <column name="role_id" valueComputed="(SELECT id FROM role WHERE role_name = 'CUSTOMER_USER')"/>
+        </insert>
+        <insert tableName="user">
+            <column name="last_name" value="Rest"/>
+            <column name="first_name" value="Rest"/>
+            <column name="middle_name" value="Rest"/>
+            <column name="email" value="rest@gmail.com"/>
+            <column name="password" value="$2y$12$dyxqOWQrxMAejRkUmE4Dvu/zWY061D.l8dUza62S0/QVgLSM8cRd. "/>
+            <column name="role_id" valueComputed="(SELECT id FROM role WHERE role_name = 'SECURE_API_USER')"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="19" author="artem.senokosov@mail.ru">
+        <createTable tableName="item">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="unique_number" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="decimal">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20" author="artem.senokosov@mail.ru">
+        <createTable tableName="item_info">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="content" type="varchar(200)">
                 <constraints nullable="false"/>
             </column>
             <column name="item_id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="item_info" baseColumnNames="item_id"
+                                 constraintName="fk_item_info_item"
+                                 referencedTableName="item"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="21" author="artem.senokosov@mail.ru">
+        <renameColumn tableName="article"
+                      oldColumnName="seller_id"
+                      newColumnName="user_id"
+                      columnDataType="int"/>
+    </changeSet>
+
+    <changeSet id="22" author="artem.senokosov@mail.ru">
+        <renameColumn tableName="comment"
+                      oldColumnName="customer_id"
+                      newColumnName="user_id"
+                      columnDataType="int"/>
+    </changeSet>
+
+    <changeSet id="23" author="artem.senokosov@mail.ru">
+        <renameColumn tableName="review"
+                      oldColumnName="customer_id"
+                      newColumnName="user_id"
+                      columnDataType="int"/>
+    </changeSet>
+
+    <changeSet id="24" author="artem.senokosov@mail.ru">
+        <createTable tableName="orders">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="number_of_orders" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="quantity" type="int">
+        </createTable>
+    </changeSet>
+
+    <changeSet id="25" author="artem.senokosov@mail.ru">
+        <renameColumn
+                tableName="orders"
+                oldColumnName="number_of_orders"
+                newColumnName="number_of_order"
+                columnDataType="int"/>
+        <modifyDataType tableName="orders"
+                        columnName="number_of_order"
+                        newDataType="uuid"/>
+    </changeSet>
+
+    <changeSet id="26" author="artem.senokosov@mail.ru">
+        <addColumn tableName="orders">
+            <column name="order_status_id"
+                    position="3"
+                    type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="total_price" type="int">
+            <column name="item_id"
+                    position="4"
+                    type="int">
                 <constraints nullable="false"/>
+            </column>
+            <column name="number_of_items"
+                    position="5"
+                    type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_price"
+                    position="6"
+                    type="decimal">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date"
+                    position="7"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="27" author="artem.senokosov@mail.ru">
+        <addForeignKeyConstraint baseTableName="orders" baseColumnNames="item_id"
+                                 constraintName="fk_orders_item"
+                                 referencedTableName="item"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="28" author="artem.senokosov@mail.ru">
+        <createTable tableName="status_order">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status_name" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="29" author="artem.senokosov@mail.ru">
+        <addForeignKeyConstraint baseTableName="orders" baseColumnNames="order_status_id"
+                                 constraintName="fk_orders_status"
+                                 referencedTableName="status_order"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="30" author="artem.senokosov@mail.ru">
+        <insert tableName="status_order">
+            <column name="status_name" value="NEW"/>
+        </insert>
+        <insert tableName="status_order">
+            <column name="status_name" value="IN_PROGRESS"/>
+        </insert>
+        <insert tableName="status_order">
+            <column name="status_name" value="DELIVERED"/>
+        </insert>
+        <insert tableName="status_order">
+            <column name="status_name" value="REJECTED"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="31" author="artem.senokosov@mail.ru">
+        <createTable tableName="order_info">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="user_id" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_details_id" type="int">
+            <column name="order_id" type="int">
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <addForeignKeyConstraint baseTableName="order_info" baseColumnNames="user_id"
+                                 constraintName="fk_order_info_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="order_info" baseColumnNames="order_id"
+                                 constraintName="fk_order_info_order"
+                                 referencedTableName="orders"
+                                 referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="23" author="artem.senokosov@mail.ru">
-        <addForeignKeyConstraint baseColumnNames="order_status_id"
-                                 baseTableName="order"
-                                 constraintName="fk_order_status_id"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="NO ACTION"
-                                 onUpdate="NO ACTION"
-                                 referencedColumnNames="id"
-                                 referencedTableName="order_status"/>
-    </changeSet>
-
-    <changeSet id="24" author="artem.senokosov@mail.ru">
-        <addForeignKeyConstraint baseColumnNames="item_id"
-                                 baseTableName="order"
-                                 constraintName="fk_item_id"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="NO ACTION"
-                                 onUpdate="NO ACTION"
-                                 referencedColumnNames="id"
-                                 referencedTableName="item"/>
-    </changeSet>
-
-    <changeSet id="25" author="artem.senokosov@mail.ru">
-        <addForeignKeyConstraint baseColumnNames="user_id"
-                                 baseTableName="order"
-                                 constraintName="fk_order_user_id"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="NO ACTION"
-                                 onUpdate="NO ACTION"
-                                 referencedColumnNames="id"
-                                 referencedTableName="user"/>
-    </changeSet>
-
-    <changeSet id="26" author="artem.senokosov@mail.ru">
-        <addForeignKeyConstraint baseColumnNames="user_details_id"
-                                 baseTableName="order"
-                                 constraintName="fk_order_user_details_id"
-                                 deferrable="false"
-                                 initiallyDeferred="false"
-                                 onDelete="NO ACTION"
-                                 onUpdate="NO ACTION"
-                                 referencedColumnNames="id"
-                                 referencedTableName="user_details"/>
-    </changeSet>
 </databaseChangeLog>
