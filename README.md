@@ -17,7 +17,7 @@ The project of an internet store was developed as part of a training course from
 
 ## <a name="general-information"></a> General information
 
-The project of an internet store was developed as part of a training course from the IT academy. Spring boot_
+The project of an internet store was developed as part of a training course from the IT academy. Spring boot 
 application with role-based authorization and authentication using the most popular Java tools and technologies: Maven,
 Spring MVC, Security, JPA (Hibernate), REST API, Bootstrap (css, js), Thymeleaf, Java 11, MySQL database storage, and
 migrating data to a database using liquibase.
