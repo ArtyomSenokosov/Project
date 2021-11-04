@@ -2,104 +2,74 @@ package ru.mail.senokosov.artem.web.controller.api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import ru.mail.senokosov.artem.service.OrderService;
-import ru.mail.senokosov.artem.service.model.show.ShowOrderDTO;
+import ru.mail.senokosov.artem.service.model.OrderDTO;
+import ru.mail.senokosov.artem.web.config.TestSecurityConfig;
 
 import java.util.Collections;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.mail.senokosov.artem.web.constant.PathConstant.*;
+import static ru.mail.senokosov.artem.web.constant.PathConstant.ORDERS_PATH;
+import static ru.mail.senokosov.artem.web.constant.PathConstant.REST_API_USER_PATH;
 
-@WebMvcTest(controllers = OrdersAPIController.class,
-        excludeAutoConfiguration = UserDetailsServiceAutoConfiguration.class)
-@ActiveProfiles("test")
-public class OrdersAPIControllerTest {
+@WebMvcTest(controllers = OrdersAPIController.class)
+@WithMockUser
+@Import(TestSecurityConfig.class)
+class OrdersAPIControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @MockBean
     private OrderService orderService;
 
     @Test
-    void shouldGetOkStatusWhenWeGetOrders() throws Exception {
+    void shouldReturnNoContentWhenOrderListIsEmpty() throws Exception {
+        when(orderService.getAllOrders()).thenReturn(Collections.emptyList());
+
         mockMvc.perform(get(REST_API_USER_PATH + ORDERS_PATH)
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
 
     @Test
-    void shouldGetEmptyListOrdersWhenWeGetOrders() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get(REST_API_USER_PATH + ORDERS_PATH)
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk())
-                .andReturn();
+    void shouldReturnInternalServerErrorWhenRetrievingOrdersFails() throws Exception {
+        when(orderService.getAllOrders()).thenThrow(RuntimeException.class);
 
-        String contentAsString = mvcResult.getResponse().getContentAsString();
-
-        assertThat(contentAsString).isEqualToIgnoringCase(objectMapper.writeValueAsString(Collections.emptyList()));
+        mockMvc.perform(get(REST_API_USER_PATH + ORDERS_PATH)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
-    void shouldGetListOrdersWhenWeGetOrders() throws Exception {
-        ShowOrderDTO showOrderDTO = new ShowOrderDTO();
-        Long id = 1L;
-        showOrderDTO.setId(id);
-        Long numberOfOrder = 1L;
-        showOrderDTO.setNumberOfItems(numberOfOrder);
+    void shouldReturnOrderByIdAndStatusOk() throws Exception {
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setId(1L);
 
-        when(orderService.getOrders()).thenReturn(Collections.singletonList(showOrderDTO));
+        when(orderService.getOrderById(1L)).thenReturn(orderDTO);
 
-        MvcResult mvcResult = mockMvc.perform(get(REST_API_USER_PATH + ORDERS_PATH)
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk())
-                .andReturn();
-
-        String contentAsString = mvcResult.getResponse().getContentAsString();
-
-        assertThat(contentAsString).isEqualToIgnoringCase(objectMapper.writeValueAsString(Collections.singletonList(showOrderDTO)));
+        mockMvc.perform(get(REST_API_USER_PATH + ORDERS_PATH + "/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(orderDTO.getId()));
     }
 
     @Test
-    void shouldReturnItemWhenWeRequestGEtOrderById() throws Exception {
-        ShowOrderDTO showOrderDTO = new ShowOrderDTO();
-        Long id = 1L;
-        showOrderDTO.setId(id);
+    void shouldReturnNotFoundWhenOrderByIdDoesNotExist() throws Exception {
+        when(orderService.getOrderById(anyLong())).thenReturn(null);
 
-        when(orderService.getOrderById(id)).thenReturn(showOrderDTO);
-
-        MvcResult mvcResult = mockMvc.perform(get(String.format("%s%s/%s", REST_API_USER_PATH, ORDERS_PATH, id))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
-        String contentAsString = mvcResult.getResponse().getContentAsString();
-        assertThat(contentAsString).isEqualToIgnoringCase(objectMapper.writeValueAsString(showOrderDTO));
-    }
-
-    @Test
-    void should404WhenWeRequestGEtOrderByWrongId() throws Exception {
-        ShowOrderDTO showOrderDTO = new ShowOrderDTO();
-        Long id = 1L;
-        showOrderDTO.setId(id);
-
-        when(orderService.getOrderById(id)).thenReturn(showOrderDTO);
-        Long wrongId = 2L;
-
-        mockMvc.perform(get(String.format("%s%s/%s", REST_API_USER_PATH, ITEMS_PATH, wrongId))
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(REST_API_USER_PATH + ORDERS_PATH + "/999")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 }

@@ -1,22 +1,23 @@
 package ru.mail.senokosov.artem.service;
 
-import org.hibernate.service.spi.ServiceException;
-import ru.mail.senokosov.artem.service.model.OrderItemDTO;
+import ru.mail.senokosov.artem.service.exception.ServiceException;
+import ru.mail.senokosov.artem.service.model.ItemDTO;
+import ru.mail.senokosov.artem.service.model.OrderDTO;
 import ru.mail.senokosov.artem.service.model.PageDTO;
-import ru.mail.senokosov.artem.service.model.show.ShowItemDTO;
-import ru.mail.senokosov.artem.service.model.show.ShowOrderDTO;
 
 import java.util.List;
 
 public interface OrderService {
 
-    List<ShowOrderDTO> getOrders();
-
     PageDTO getOrdersByPage(int page);
 
-    ShowOrderDTO getOrderById(Long id) throws ServiceException;
+    PageDTO getOrdersByPageForUser(int page, String username) throws ServiceException;
 
-    ShowOrderDTO changeStatusById(String status, Long id) throws ServiceException;
+    OrderDTO getOrderById(Long id) throws ServiceException;
 
-    ShowOrderDTO persist(ShowItemDTO showItemDTO, OrderItemDTO orderItemDTO) throws ServiceException;
+    List<OrderDTO> getAllOrders() throws ServiceException;
+
+    void addItemInOrder(ItemDTO itemDTO, OrderDTO orderItemDTO) throws ServiceException;
+
+    void changeStatusById(String status, Long id) throws ServiceException;
 }

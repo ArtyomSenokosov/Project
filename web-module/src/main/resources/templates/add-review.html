@@ -1,55 +1,146 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="ISO-8859-1">
-    <title>Add review</title>
+    <meta charset="UTF-8">
+    <title>Add Review</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            padding-top: 60px;
+            margin: 0;
+        }
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-          integrity="undefined"
-          crossorigin="anonymous">
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #ffffff;
+            width: 100%;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
+        .container-fluid {
+            max-width: 960px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            background-color: #0056b3;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .navbar-dark.bg-primary {
+            background-color: #0056b3 !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: #ffffff;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" type="submit" th:href="@{/articles}">News</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" type="submit" th:href="@{/items}">Shop</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" type="submit" th:href="@{/orders}">Orders</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" type="submit" href="#">Basket</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" type="submit" th:href="@{/user-profile}">Account information</a>
-            </li>
-            <li class="nav-item">
-                <span class="navbar-text" th:text="${#authentication.name}"></span>
-                <a class="btn btn-light" th:href="@{/logout}" role="button">Logout</a>
-            </li>
-        </ul>
-    </div>
-</nav>
-<h2>Add review</h2>
-<form class="row row-cols-lg-auto g-3 align-items-center" method="post" th:object="${review}">
-    <div class="col-12">
-        <div class="input-group has-validation">
-            <span class="input-group-text" id="review-sizing-default">Review</span>
-            <input type="text" class="form-control" id="review" name="review"
-                   required th:field="*{review}">
-            <input type="hidden" name="username" th:value="${#authentication.name}">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/user-profile" style="font-size: 22px; padding-top: 10px; padding-bottom: 10px;">News
+            Portal</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <div sec:authorize="hasAnyAuthority('ADMINISTRATOR')">
+                    <li class="nav-item">
+                        <a class="nav-link" type="submit" th:href="@{/admin/users}">Users</a>
+                    </li>
+                </div>
+
+                <li class="nav-item">
+                    <a class="nav-link" methods="get"
+                       th:href="@{${#authorization.expression('hasAuthority(''ADMINISTRATOR'')') ? '/admin/news' :
+                    '/customer/news'}}" type="submit">News</a>
+                </li>
+
+                <div sec:authorize="hasAnyAuthority('ADMINISTRATOR')">
+                    <li class="nav-item">
+                        <a class="nav-link" type="submit" th:href="@{/admin/reviews}">Reviews</a>
+                    </li>
+                </div>
+
+                <li class="nav-item">
+                    <a class="nav-link" methods="get"
+                       th:href="@{${#authorization.expression('hasAuthority(''ADMINISTRATOR'')') ? '/admin/reviews/add-review' :
+                    '/customer/reviews/add-review'}}" type="submit">Add review</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" methods="get"
+                       th:href="@{${#authorization.expression('hasAuthority(''ADMINISTRATOR'')') ? '/admin/items' :
+                    '/customer/items'}}" type="submit">Items</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" methods="get"
+                       th:href="@{${#authorization.expression('hasAuthority(''ADMINISTRATOR'')') ? '/admin/orders' :
+                    '/customer/orders'}}" type="submit">Orders</a>
+                </li>
+            </ul>
+            <div class="navbar-text ms-3 me-2" th:text="${#authentication.name}">Username</div>
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+                <button type="submit" class="btn btn-light ms-2">Logout</button>
+            </form>
         </div>
     </div>
-    <div class="col-12">
-        <button type="submit" class="btn btn-primary">Add review</button>
-    </div>
-</form>
-<script th:src="@{/js/bootstrap.bundTe.js}"></script>
+</nav>
+
+<div class="container mt-5">
+    <h1>Add Review</h1>
+    <form th:action="@{${#authorization.expression('hasAuthority(''ADMINISTRATOR'')') ? '/admin/reviews/add-review' : '/customer/reviews/add-review'}}"
+          th:object="${reviewDTO}" method="post">
+        <div>
+            <label for="review" class="form-label">Review</label>
+            <textarea class="form-control" id="review" th:field="*{content}" rows="3" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Review</button>
+    </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

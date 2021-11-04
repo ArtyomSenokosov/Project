@@ -2,8 +2,6 @@ package ru.mail.senokosov.artem.service.model;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -13,28 +11,13 @@ import static ru.mail.senokosov.artem.service.constant.UserValidationConstant.*;
 public class UserInfoDTO {
 
     private Long id;
-    @NotBlank
-    @NotNull
-    @Size(max = MAXIMUM_FIRST_NAME_SIZE)
-    @Pattern(regexp = ONLY_LATIN_LETTERS_REGEXP, message = "The first name must be written in Latin letters and start with a capital letter")
     private String firstName;
-    @NotBlank
-    @NotNull
-    @Size(max = MAXIMUM_LAST_NAME_SIZE)
-    @Pattern(regexp = ONLY_LATIN_LETTERS_REGEXP, message = "The last name must be written in Latin letters and start with a capital letter")
     private String lastName;
-    @NotBlank
-    @NotNull
-    @Size(max = MAXIMUM_TELEPHONE_SIZE)
+    @Pattern(regexp = ONLY_LATIN_LETTERS_REGEXP, message = "Telephone format is invalid")
+    @Size(max = MAXIMUM_TELEPHONE_SIZE, message = "Telephone must be less than {max} characters")
     private String telephone;
-    @NotBlank
-    @NotNull
-    @Size(max = MAXIMUM_ADDRESS_SIZE)
+    @Size(max = MAXIMUM_ADDRESS_SIZE, message = "Address must be less than {max} characters")
     private String address;
-    @NotBlank
-    @NotNull
     private String oldPassword;
-    @NotBlank
-    @NotNull
     private String newPassword;
 }

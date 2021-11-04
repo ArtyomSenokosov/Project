@@ -1,12 +1,11 @@
 package ru.mail.senokosov.artem.service.converter;
 
 import ru.mail.senokosov.artem.repository.model.Item;
-import ru.mail.senokosov.artem.service.model.add.AddItemDTO;
-import ru.mail.senokosov.artem.service.model.show.ShowItemDTO;
+import ru.mail.senokosov.artem.service.model.ItemDTO;
 
 public interface ItemConverter {
 
-    ShowItemDTO convert(Item item);
+    ItemDTO convert(Item item);
 
-    Item convert(AddItemDTO addItemDTO);
+    Item convert(ItemDTO itemDTO);
 }

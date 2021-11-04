@@ -1,107 +1,65 @@
 package ru.mail.senokosov.artem.service.converter.impl;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.modelmapper.ModelMapper;
 import ru.mail.senokosov.artem.repository.model.Item;
-import ru.mail.senokosov.artem.repository.model.ItemInfo;
-import ru.mail.senokosov.artem.service.model.add.AddItemDTO;
-import ru.mail.senokosov.artem.service.model.show.ShowItemDTO;
+import ru.mail.senokosov.artem.service.model.ItemDTO;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ItemConverterImplTest {
+public class ItemConverterImplTest {
+
+    @Mock
+    private ModelMapper modelMapper;
 
     @InjectMocks
     private ItemConverterImpl itemConverter;
 
-    @Test
-    void shouldConvertItemToShowItemDTOAndReturnRightId() {
-        Item item = new Item();
-        Long id = 1L;
-        item.setId(id);
-        ShowItemDTO showItemDTO = itemConverter.convert(item);
+    private Item item;
+    private ItemDTO itemDTO;
 
-        assertEquals(id, showItemDTO.getId());
+    @BeforeEach
+    void setUp() {
+        item = new Item();
+        item.setTitle("Sample Item");
+        item.setContent("This is a sample item content");
+        item.setPrice(new BigDecimal("19.99"));
+
+        itemDTO = new ItemDTO();
+        itemDTO.setTitle("Sample Item");
+        itemDTO.setContent("This is a sample item content");
+        itemDTO.setPrice(new BigDecimal("19.99"));
     }
 
     @Test
-    void shouldConvertItemToShowItemDTOAndReturnRightTitle() {
-        Item item = new Item();
-        String title = "test title";
-        item.setTitle(title);
-        ShowItemDTO showItemDTO = itemConverter.convert(item);
+    void shouldCorrectlyConvertItemToDTO() {
+        when(modelMapper.map(item, ItemDTO.class)).thenReturn(itemDTO);
+        ItemDTO resultDTO = itemConverter.convert(item);
 
-        assertEquals(title, showItemDTO.getTitle());
+        assertEquals("Sample Item", resultDTO.getTitle());
+        assertEquals("This is a sample item content", resultDTO.getContent());
+        assertEquals(new BigDecimal("19.99"), resultDTO.getPrice());
     }
 
     @Test
-    void shouldConvertItemToShowItemDTOAndReturnRightUuid() {
-        Item item = new Item();
-        UUID uuid = UUID.fromString("de05425c-da35-45ba-be2f-61284704662e");
-        item.setUuid(uuid);
-        ShowItemDTO showItemDTO = itemConverter.convert(item);
+    void shouldCorrectlyConvertDTOToItem() {
+        when(modelMapper.map(itemDTO, Item.class)).thenReturn(item);
+        Item resultItem = itemConverter.convert(itemDTO);
 
-        assertEquals(uuid, showItemDTO.getUuid());
-    }
-
-    @Test
-    void shouldConvertItemToShowItemDTOAndReturnRightPrice() {
-        Item item = new Item();
-        BigDecimal price = BigDecimal.valueOf(100);
-        item.setPrice(price);
-        ShowItemDTO showItemDTO = itemConverter.convert(item);
-
-        assertEquals(price, showItemDTO.getPrice());
-    }
-
-    @Test
-    void shouldConvertItemToShowItemDTOAndReturnRightContent() {
-        ItemInfo itemInfo = new ItemInfo();
-        String content = "test content";
-        itemInfo.setShortContent(content);
-        Item item = new Item();
-        item.setItemInfo(itemInfo);
-        ShowItemDTO showItemDTO = itemConverter.convert(item);
-
-        assertEquals(content, showItemDTO.getContent());
-    }
-
-    @Test
-    void shouldConvertAddItemDTOToItemAndReturnRightTitle() {
-        AddItemDTO addItemDTO = new AddItemDTO();
-        String title = "test title";
-        addItemDTO.setTitle(title);
-        Item item = itemConverter.convert(addItemDTO);
-
-        assertEquals(title, item.getTitle());
-    }
-
-    @Test
-    void shouldConvertAddItemDTOToItemAndReturnRightPrice() {
-        AddItemDTO addItemDTO = new AddItemDTO();
-        BigDecimal price = BigDecimal.valueOf(100);
-        addItemDTO.setPrice(price);
-        Item item = itemConverter.convert(addItemDTO);
-
-        assertEquals(price, item.getPrice());
-    }
-
-    @Test
-    void shouldConvertAddItemDTOToItemAndReturnRightContent() {
-        AddItemDTO addItemDTO = new AddItemDTO();
-        String content = "test content";
-        addItemDTO.setContent(content);
-        Item item = itemConverter.convert(addItemDTO);
-
-        assertEquals(content, item.getItemInfo().getShortContent());
+        assertEquals("Sample Item", resultItem.getTitle());
+        assertEquals("This is a sample item content", resultItem.getContent());
+        assertEquals(new BigDecimal("19.99"), resultItem.getPrice());
     }
 }

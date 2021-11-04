@@ -1,30 +1,34 @@
 package ru.mail.senokosov.artem.service.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.lang.NonNull;
+import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
-@Getter
-@Setter
+import static ru.mail.senokosov.artem.service.constant.UserValidationConstant.*;
+
+@Data
 public class UserDTO {
 
     private Long id;
     private UUID uuid;
-    @NonNull
-    @Size(min = 2, max = 40, message = "characters count should be in the range between 2 and 40")
-    private String secondname;
-    @NonNull
-    @Size(min = 2, max = 20, message = "characters count should be in the range between 2 and 20")
-    private String firstname;
-    @NonNull
-    @Size(min = 2, max = 40, message = "characters count should be in the range between 2 and 40")
-    private String middlename;
-    @NonNull
-    @Pattern(regexp = "^[-\\w.]+@([A-z0-9][-A-z0-9]+\\/)+[A-z](2,4)$")
+    @NotNull(message = "Last name cannot be null")
+    @Size(min = MINIMUM_LAST_NAME_SIZE, max = MAXIMUM_LAST_NAME_SIZE,
+            message = "Last name must be in the range between {min} and {max}")
+    private String lastName;
+    @NotNull(message = "First name cannot be null")
+    @Size(min = MINIMUM_FIRST_NAME_SIZE, max = MAXIMUM_FIRST_NAME_SIZE,
+            message = "First name must be in the range between {min} and {max}}")
+    private String firstName;
+    @Size(min = MINIMUM_MIDDLE_NAME_SIZE, max = MAXIMUM_MIDDLE_NAME_SIZE,
+            message = "Middle name must be in the range between {min} and {max}")
+    private String middleName;
+    @NotNull(message = "Email cannot be null")
+    @Size(min = MINIMUM_EMAIL_NAME_SIZE, max = MAXIMUM_EMAIL_NAME_SIZE,
+            message = "Email must be in the range between {min} and {max}")
+    @Pattern(regexp = EMAIL_REGEXP)
     private String email;
     private String password;
     private String roleName;

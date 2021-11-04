@@ -1,121 +1,231 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="ISO-8859-1">
-    <title>User list</title>
+    <meta charset="UTF-8">
+    <title>Users List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            padding-top: 60px;
+            margin: 0;
+        }
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-          integrity="undefined"
-          crossorigin="anonymous">
+        .container {
+            max-width: 960px;
+        }
 
+        .container-fluid {
+            max-width: 960px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .table {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+
+        .navbar-dark.bg-primary {
+            background-color: #0056b3 !important;
+        }
+
+        .btn {
+            margin-right: 5px;
+        }
+
+        .btn-danger {
+            background-color: #d9534f;
+        }
+
+        .btn-light {
+            background-color: #f7f7f7;
+        }
+
+        .form-select {
+            font-family: 'Roboto', sans-serif;
+            color: #333333;
+        }
+
+        .page-item.active .page-link {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .page-link {
+            color: #0056b3;
+        }
+
+        .page-link:hover {
+            color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" type="submit" th:href="@{/articles}">News</a>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/user-profile" style="font-size: 22px; padding-top: 10px; padding-bottom: 10px;">News
+            Portal</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" type="submit" th:href="@{/admin/users}">Users</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" type="submit" th:href="@{/admin/users/add-user}">Add user</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" type="submit" th:href="@{/admin/news}">News</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" type="submit" th:href="@{/admin/reviews}">Reviews</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" type="submit" th:href="@{/admin/items}">Items</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" type="submit" th:href="@{/admin/orders}">Orders</a>
+                </li>
+            </ul>
+            <div class="navbar-text ms-3 me-2" th:text="${#authentication.name}">Username</div>
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+                <button type="submit" class="btn btn-light ms-2">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h1>Users List</h1>
+    <div th:if="${pageDTO != null}">
+        <table class="table">
+            <thead>
+            <tr>
+                <th><label for="selectAll"></label><input type="checkbox" id="selectAll"/></th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${pageDTO.users}">
+                <td>
+                    <label>
+                        <input type="checkbox" th:if="${user.email != 'admin@email.com'}" th:name="userIds"
+                               th:value="${user.id}"/>
+                    </label>
+                    <span th:if="${user.email == 'admin@email.com'}">&#8212;</span>
+                </td>
+                <td th:text="${user.firstName + ' ' + (user.middleName != null ? user.middleName : '') + ' ' + user.lastName}">
+                    Full Name
+                </td>
+                <td th:text="${user.getEmail}">Email</td>
+                <td th:text="${user.roleName}">Role</td>
+                <td>
+                    <a th:href="@{'/admin/users/' + ${user.id} + '/reset-password'}"
+                       class="btn btn-sm btn-outline-secondary me-1">Reset Password</a>
+
+                    <div th:if="${user.email != 'admin@email.com'}" class="d-inline">
+                        <form th:action="@{'/admin/users/' + ${user.id} + '/change-role'}" method="post"
+                              class="d-inline">
+                            <label>
+                                <select name="roleName" class="form-select form-select-sm d-inline"
+                                        style="width: auto; vertical-align: top;"
+                                        onchange="this.form.submit()">
+                                    <option value="">Change Role</option>
+                                    <option th:each="role : ${T(ru.mail.senokosov.artem.service.model.enums.RoleDTOEnum).values()}"
+                                            th:value="${role.name()}" th:text="${role.name()}">Role Name
+                                    </option>
+                                </select>
+                            </label>
+                            <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+                        </form>
+                    </div>
+                    <span th:if="${user.email == 'admin@email.com'}">&#8212;</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <button id="deleteSelectedBtn" class="btn btn-danger">Delete Selected Users</button>
+    </div>
+    <div th:if="${pageDTO.totalPages > 1}">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${pageDTO.currentPage == 1} ? 'disabled' : ''">
+                <a class="page-link" th:href="@{/admin/users(page=${pageDTO.currentPage - 1})}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" type="submit" th:href="@{/items}">Shop</a>
+            <li th:each="pageNum : ${#numbers.sequence(1, pageDTO.totalPages)}" class="page-item"
+                th:classappend="${pageNum == pageDTO.currentPage} ? 'active' : ''">
+                <a class="page-link" th:href="@{/admin/users(page=${pageNum})}" th:text="${pageNum}">Page number</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" type="submit" href="#">Basket</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" type="submit" th:href="@{/user-profile}">Account information</a>
-            </li>
-            <li class="nav-item">
-                <span class="navbar-text" th:text="${#authentication.name}"></span>
-                <a class="btn btn-light" th:href="@{/logout}" role="button">Logout</a>
+            <li class="page-item" th:classappend="${pageDTO.currentPage == pageDTO.totalPages} ? 'disabled' : ''">
+                <a class="page-link" th:href="@{/admin/users(page=${pageDTO.currentPage + 1})}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
             </li>
         </ul>
     </div>
-</nav>
-<h2>Users</h2>
-<form action="#" th:action="@{/admin/users/delete}" method="post" id="checkbox_form"></form>
-<table class="table">
-    <thead class="table-primary">
-    <tr style="text-align: center">
-        <th scope="col">
-            Id
-        </th>
-        <th scope="col">
-            Second Name
-        </th>
-        <th scope="col">
-            First Name
-        </th>
-        <th scope="col">
-            Middle Name
-        </th>
-        <th scope="col">
-            Email
-        </th>
-        <th scope="col">
-            Role
-        </th>
-        <th colspan="4">Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr style="text-align: center" th:each="user : ${pageDTO.users}">
-        <td th:text="${user.id}"></td>
-        <td th:text="${user.lastName}"></td>
-        <td th:text="${user.firstName}"></td>
-        <td th:text="${user.middleName}"></td>
-        <td th:text="${user.email}"></td>
-        <td th:text="${user.roleName}"></td>
-        <td>
-            <span th:unless="${user.email}==${#authentication.name}">
-                <input type="checkbox" name="checkedIds" form="checkbox_form" th:value="${user.id}">
-            </span>
-        </td>
-        <td>
-            <a class="btn btn-primary" role="button"
-               th:href="@{/admin/users/{id}/reset-password/(id=${user.id})}">
-                Reset password</a>
-        </td>
-        <form th:action="@{/admin/users/{id}/change-role/(id=${user.id})}" method="post">
-            <td>
-            <span th:unless="${user.email}==${#authentication.name}">
-            <div class="col-12">
-                <select class="form-select" aria-label="Default select example" name="roleName">
-                    <option th:each="role : ${T(ru.mail.senokosov.artem.service.model.RoleDTOEnum).values()}"
-                            th:value="${role.name()}" th:text="${role.name()}"></option>
-                </select>
-            </div>
-            </span>
-            </td>
-            <td>
-             <span th:unless="${user.email}==${#authentication.name}">
-                 <button class="btn btn-primary" type="submit">Change</button>
-             </span>
-            </td>
-        </form>
-    </tr>
-    </tbody>
-</table>
-<div class="d-grid gap-2 col-6 mx-auto">
-    <button class="btn btn-primary" form="checkbox_form" type="submit">Delete</button>
 </div>
-<div>
-     <span th:if="${pageDTO.countOfPages gt 1}">
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            <li class="page-item"><a class="page-link" href="@{/admin/users?page={id}(id=${i-1})}">Previous</a></li>
-            <li class="page-item" th:each="i : ${#numbers.sequence(pageDTO.beginPage, pageDTO.endPage)} ">
-                <a class="bg-primary text-warning border-warning page-link"
-                   th:classappend="${pageDTO.currentPage}==${i}?'activepagenumber':''"
-                   th:href="@{/admin/users?page={id}(id=${i})}"
-                   th:text="${i}"></a>
-            </li>
-            <li class="page-item"><a class="page-link" href="@{/admin/users?page={id}(id=${i+1})}">Next</a></li>
-        </ul>
-    </nav>
-     </span>
-</div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('selectAll').addEventListener('click', function () {
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
+
+    document.getElementById('deleteSelectedBtn').addEventListener('click', function () {
+            const selectedUserIds = Array.from(document.querySelectorAll('input[name="userIds"]:checked')).map(checkbox => checkbox.value);
+
+            if (selectedUserIds.length > 0) {
+                const form = document.createElement('form');
+                form.method = 'post';
+                form.action = '/admin/users/delete-select';
+
+                selectedUserIds.forEach(userId => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'userIds';
+                    input.value = userId;
+                    form.appendChild(input);
+                });
+
+                const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = "_csrf";
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                alert('Please select at least one user to delete.');
+            }
+        }
+    );
+</script>
 </body>
 </html>

@@ -1,25 +1,23 @@
 package ru.mail.senokosov.artem.service;
 
-import org.hibernate.service.spi.ServiceException;
-import ru.mail.senokosov.artem.service.model.*;
-import ru.mail.senokosov.artem.service.model.add.AddUserDTO;
-import ru.mail.senokosov.artem.service.model.add.AddUserInfoDTO;
-import ru.mail.senokosov.artem.service.model.show.ShowUserDTO;
-import ru.mail.senokosov.artem.service.model.show.ShowUserInfoDTO;
+import ru.mail.senokosov.artem.service.exception.ServiceException;
+import ru.mail.senokosov.artem.service.model.PageDTO;
+import ru.mail.senokosov.artem.service.model.UserDTO;
+import ru.mail.senokosov.artem.service.model.UserInfoDTO;
 
 public interface UserService {
 
     PageDTO getUsersByPage(Integer page);
 
-    ShowUserDTO persist(AddUserDTO addUserDTO) throws ServiceException;
-
     boolean isDeleteById(Long id);
 
-    ShowUserDTO resetPassword(Long id) throws ServiceException;
+    UserDTO addUser(UserDTO userDTO) throws ServiceException;
 
-    ShowUserDTO changeRoleById(String roleName, Long id) throws ServiceException;
+    void changeRoleById(String roleName, Long id) throws ServiceException;
 
-    ShowUserInfoDTO getUserByUserName(String userName) throws ServiceException;
+    void resetPassword(Long id) throws ServiceException;
 
-    ShowUserInfoDTO changeParameterById(AddUserInfoDTO addUserInfoDTO) throws ServiceException;
+    UserInfoDTO getUserByUserName(String userName) throws ServiceException;
+
+    void changeParameterById(UserInfoDTO userInfoDTO) throws ServiceException;
 }

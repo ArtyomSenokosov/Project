@@ -18,7 +18,7 @@ public class OrderStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "status_name")
+    @Column(name = "status_name", nullable = false)
     private String status;
     @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
     @JoinColumn(name = "order_status_id")

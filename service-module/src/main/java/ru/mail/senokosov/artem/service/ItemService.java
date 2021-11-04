@@ -1,28 +1,22 @@
 package ru.mail.senokosov.artem.service;
 
 import ru.mail.senokosov.artem.service.exception.ServiceException;
+import ru.mail.senokosov.artem.service.model.ItemDTO;
 import ru.mail.senokosov.artem.service.model.PageDTO;
-import ru.mail.senokosov.artem.service.model.add.AddItemDTO;
-import ru.mail.senokosov.artem.service.model.show.ShowItemDTO;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface ItemService {
 
-    PageDTO getItemsByPage(int page);
+    PageDTO getItemsByPage(Integer page);
 
-    List<ShowItemDTO> getItems();
+    ItemDTO getItemById(Long id) throws ServiceException;
 
-    ShowItemDTO getItemById(Long id) throws ServiceException;
-
-    ShowItemDTO persist(AddItemDTO addItemDTO);
+    List<ItemDTO> getAllItems() throws ServiceException;
 
     boolean isDeleteById(Long id);
 
-    ShowItemDTO getItemByUuid(UUID uuid) throws ServiceException;
+    ItemDTO addItem(ItemDTO itemDTO) throws ServiceException;
 
-    boolean isDeleteByUuid(UUID uuid) throws ServiceException;
-
-    ShowItemDTO CopyItemByUuid(UUID uuid) throws ServiceException;
+    void copyItemById(Long id) throws ServiceException;
 }

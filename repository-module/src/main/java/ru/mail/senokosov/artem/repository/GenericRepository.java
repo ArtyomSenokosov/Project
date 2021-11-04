@@ -12,6 +12,8 @@ public interface GenericRepository<I, T> {
 
     List<T> findAll();
 
+    Long getCount();
+
     void removeById(I id);
 
     void merge(T entity);

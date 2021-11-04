@@ -1,20 +1,11 @@
-version: '3.3'
+version: '3.8'
 services:
   db:
-    image: mysql:latest
+    image: mysql:8.0
     restart: always
     environment:
       MYSQL_DATABASE: 'project_db'
       MYSQL_ROOT_PASSWORD: 'root'
     ports:
       - '3306:3306'
-    expose:
-      - '3306'
     command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
-
-  mailhog:
-    image: mailhog/mailhog:latest
-    restart: always
-    ports:
-      - 1025:1025
-      - 8025:8025

@@ -1,16 +1,19 @@
 package ru.mail.senokosov.artem.service.model;
 
 import lombok.Data;
-import ru.mail.senokosov.artem.repository.model.OrderStatus;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 public class OrderDTO {
 
     private Long id;
-    @NotBlank
-    @NotNull
-    private OrderStatus orderStatus;
+    private UUID uuidOfOrder;
+    private String orderStatus;
+    private String title;
+    private Long numberOfItems;
+    private BigDecimal totalPrice;
+    private String lastName;
+    private String telephone;
 }

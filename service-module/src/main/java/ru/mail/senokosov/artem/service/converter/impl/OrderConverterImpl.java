@@ -1,44 +1,55 @@
 package ru.mail.senokosov.artem.service.converter.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import ru.mail.senokosov.artem.repository.model.*;
 import ru.mail.senokosov.artem.service.converter.OrderConverter;
-import ru.mail.senokosov.artem.service.model.show.ShowOrderDTO;
+import ru.mail.senokosov.artem.service.model.OrderDTO;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
 @Component
+@RequiredArgsConstructor
 public class OrderConverterImpl implements OrderConverter {
 
+    private final ModelMapper modelMapper;
+
     @Override
-    public ShowOrderDTO convert(Order order) {
-        ShowOrderDTO showOrderDTO = new ShowOrderDTO();
-        Long id = order.getId();
-        showOrderDTO.setId(id);
-        UUID numberOfOrder = order.getNumberOfOrder();
-        showOrderDTO.setNumberOfOrder(numberOfOrder);
+    public OrderDTO convert(Order order) {
+        OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
+
+        UUID numberOfOrder = order.getUuidOfOrder();
+        orderDTO.setUuidOfOrder(numberOfOrder);
+
         OrderStatus orderStatus = order.getOrderStatus();
         String status = orderStatus.getStatus();
-        showOrderDTO.setOrderStatus(status);
+        orderDTO.setOrderStatus(status);
+
         Item item = order.getItem();
-        showOrderDTO.setTitle(item.getTitle());
+        orderDTO.setTitle(item.getTitle());
+
         Long numberOfItems = order.getNumberOfItems();
-        showOrderDTO.setNumberOfItems(numberOfItems);
+        orderDTO.setNumberOfItems(numberOfItems);
+
         BigDecimal totalPrice = order.getTotalPrice();
-        showOrderDTO.setTotalPrice(totalPrice);
-        OrderInfo orderInfo = order.getOrderInfo();
-        if (Objects.nonNull(orderInfo)) {
-            User user = orderInfo.getUser();
-            if (Objects.nonNull(user)) {
-                String lastName = user.getLastName();
-                showOrderDTO.setLastName(lastName);
-                UserInfo userInfo = (UserInfo) user.getUserInfo();
+        orderDTO.setTotalPrice(totalPrice);
+
+        User user = order.getUser();
+        if (Objects.nonNull(user)) {
+            String lastName = user.getLastName();
+            orderDTO.setLastName(lastName);
+            UserInfo userInfo = user.getUserInfo();
+            if (Objects.nonNull(userInfo)) {
                 String telephone = userInfo.getTelephone();
-                showOrderDTO.setTelephone(telephone);
+                orderDTO.setTelephone(telephone);
+            } else {
+                orderDTO.setTelephone("N/A");
             }
         }
-        return showOrderDTO;
+
+        return orderDTO;
     }
 }

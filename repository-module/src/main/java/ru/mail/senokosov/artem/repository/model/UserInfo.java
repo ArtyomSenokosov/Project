@@ -14,9 +14,9 @@ public class UserInfo {
     private Long id;
     @Column
     private String address;
-    @Column
+    @Column(length = 20)
     private String telephone;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 }

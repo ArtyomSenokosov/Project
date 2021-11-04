@@ -1,0 +1,14 @@
+[
+  {
+    "uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "title": "First Item",
+    "content": "This is the first item's description",
+    "price": 19.99
+  },
+  {
+    "uuid": "d29e1b48-88bb-4625-96f7-8fdf9e206c4a",
+    "title": "Example Item 24",
+    "content": "Description for example item 24",
+    "price": 29.99
+  }
+]

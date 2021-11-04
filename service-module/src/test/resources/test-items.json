@@ -1,0 +1,16 @@
+[
+  {
+    "uuid": "00000000-0000-0000-0000-000000000001",
+    "title": "Item 1 Title",
+    "content": "Content for Item 1",
+    "price": 19.99,
+    "id": 1
+  },
+  {
+    "uuid": "00000000-0000-0000-0000-000000000002",
+    "title": "Item 2 Title",
+    "content": "Content for Item 2",
+    "price": 29.99,
+    "id": 2
+  }
+]

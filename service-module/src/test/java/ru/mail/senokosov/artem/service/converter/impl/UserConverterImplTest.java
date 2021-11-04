@@ -1,201 +1,202 @@
 package ru.mail.senokosov.artem.service.converter.impl;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.modelmapper.ModelMapper;
 import ru.mail.senokosov.artem.repository.model.Role;
 import ru.mail.senokosov.artem.repository.model.User;
 import ru.mail.senokosov.artem.repository.model.UserInfo;
-import ru.mail.senokosov.artem.service.model.enums.RoleDTOEnum;
-import ru.mail.senokosov.artem.service.model.add.AddUserDTO;
-import ru.mail.senokosov.artem.service.model.show.ShowUserDTO;
-import ru.mail.senokosov.artem.service.model.show.ShowUserInfoDTO;
+import ru.mail.senokosov.artem.service.model.UserDTO;
+import ru.mail.senokosov.artem.service.model.UserInfoDTO;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class UserConverterImplTest {
+public class UserConverterImplTest {
+
+    @Mock
+    private ModelMapper modelMapper;
 
     @InjectMocks
     private UserConverterImpl userConverter;
 
-    @Test
-    void shouldConvertUserToShowUserDTOAndReturnRightId() {
-        User user = new User();
-        Long id = 1L;
-        user.setId(id);
-        ShowUserDTO showUserDTO = userConverter.convert(user);
+    private User user;
+    private UserDTO userDTO;
+    private UserInfoDTO userInfoDTO;
 
-        assertEquals(id, showUserDTO.getId());
+    @BeforeEach
+    void setUp() {
+        user = new User();
+        user.setFirstName("Alice");
+        user.setLastName("Smith");
+        user.setMiddleName("Elizabeth");
+        Role userRole = new Role();
+        userRole.setRoleName("User");
+        user.setRole(userRole);
+
+        userDTO = new UserDTO();
+        userDTO.setFirstName("Alice");
+        userDTO.setLastName("Smith");
+        userDTO.setMiddleName("Elizabeth");
+        userDTO.setRoleName("User");
+
+        userInfoDTO = new UserInfoDTO();
+        userInfoDTO.setFirstName("Alice");
+        userInfoDTO.setLastName("Smith");
     }
 
     @Test
-    void shouldConvertUserToShowUserDTOAndReturnRightLastName() {
-        User user = new User();
-        String lastName = "test last name";
-        user.setLastName(lastName);
-        ShowUserDTO showUserDTO = userConverter.convert(user);
+    void shouldCorrectlyConvertUserToUserDTO() {
+        when(modelMapper.map(user, UserDTO.class)).thenReturn(userDTO);
+        UserDTO resultDTO = userConverter.convert(user);
 
-        assertEquals(lastName, showUserDTO.getLastName());
+        assertEquals("Alice", resultDTO.getFirstName());
+        assertEquals("Smith", resultDTO.getLastName());
+        assertEquals("Elizabeth", resultDTO.getMiddleName());
+        assertEquals("User", resultDTO.getRoleName());
     }
 
     @Test
-    void shouldConvertUserToShowUserDTOAndReturnRightFirstName() {
-        User user = new User();
-        String firstName = "test first name";
-        user.setFirstName(firstName);
-        ShowUserDTO showUserDTO = userConverter.convert(user);
+    void shouldCorrectlyConvertUserDTOToUser() {
+        when(modelMapper.map(userDTO, User.class)).thenReturn(user);
+        User resultUser = userConverter.convert(userDTO);
 
-        assertEquals(firstName, showUserDTO.getFirstName());
+        assertEquals("Alice", resultUser.getFirstName());
+        assertEquals("Smith", resultUser.getLastName());
+        assertEquals("Elizabeth", resultUser.getMiddleName());
     }
 
     @Test
-    void shouldConvertUserToShowUserDTOAndReturnRightMiddleName() {
-        User user = new User();
-        String middleName = "test middle name";
-        user.setMiddleName(middleName);
-        ShowUserDTO showUserDTO = userConverter.convert(user);
+    void shouldCorrectlyConvertUserToUserInfoDTO() {
+        when(modelMapper.map(user, UserInfoDTO.class)).thenReturn(userInfoDTO);
+        UserInfoDTO resultInfoDTO = userConverter.convertUserToUserInfoDTO(user);
 
-        assertEquals(middleName, showUserDTO.getMiddleName());
+        assertEquals("Alice", resultInfoDTO.getFirstName());
+        assertEquals("Smith", resultInfoDTO.getLastName());
     }
 
     @Test
-    void shouldConvertUserToShowUserDTOAndReturnRightEmail() {
-        User user = new User();
-        String email = "test email";
-        user.setEmail(email);
-        ShowUserDTO showUserDTO = userConverter.convert(user);
+    void shouldHandleNullMiddleNameWhenConvertingToUserDTO() {
+        user.setMiddleName(null);
 
-        assertEquals(email, showUserDTO.getEmail());
+        UserDTO expectedDTO = new UserDTO();
+        expectedDTO.setFirstName(user.getFirstName());
+        expectedDTO.setLastName(user.getLastName());
+        expectedDTO.setMiddleName(null);
+
+        when(modelMapper.map(user, UserDTO.class)).thenReturn(expectedDTO);
+
+        UserDTO resultDTO = userConverter.convert(user);
+
+        assertNull(resultDTO.getMiddleName(), "Middle name should be null when it's null in the source");
     }
 
     @Test
-    void shouldConvertUserToShowUserDTOAndReturnRightRoleName() {
-        Role role = new Role();
-        String roleName = RoleDTOEnum.ADMINISTRATOR.name();
-        role.setRoleName(roleName);
-        User user = new User();
-        user.setRole(role);
-        ShowUserDTO showUserDTO = userConverter.convert(user);
+    void shouldHandleEmptyMiddleNameWhenConvertingToUserDTO() {
+        user.setMiddleName("");
+        UserDTO expectedDTO = new UserDTO();
+        expectedDTO.setFirstName(user.getFirstName());
+        expectedDTO.setLastName(user.getLastName());
+        expectedDTO.setMiddleName(null);
 
-        assertEquals(roleName, showUserDTO.getRoleName());
+        when(modelMapper.map(user, UserDTO.class)).thenReturn(expectedDTO);
+
+        UserDTO resultDTO = userConverter.convert(user);
+
+        assertNull(resultDTO.getMiddleName(), "Middle name should be null when it's empty");
     }
 
     @Test
-    void shouldConvertAddUserDTOToUserAndReturnRightLastName() {
-        AddUserDTO addUserDTO = new AddUserDTO();
-        String lastName = "test last name";
-        addUserDTO.setLastName(lastName);
-        User user = userConverter.convert(addUserDTO);
+    void shouldHandleNullRoleWhenConvertingToUserDTO() {
+        user.setRole(null);
 
-        assertEquals(lastName, user.getLastName());
+        UserDTO expectedDTO = new UserDTO();
+        expectedDTO.setFirstName(user.getFirstName());
+        expectedDTO.setLastName(user.getLastName());
+        expectedDTO.setRoleName(null);
+
+        when(modelMapper.map(user, UserDTO.class)).thenReturn(expectedDTO);
+
+        UserDTO resultDTO = userConverter.convert(user);
+
+        assertNull(resultDTO.getRoleName(), "Role name should be null when role is null");
     }
 
     @Test
-    void shouldConvertAddUserDTOToUserAndReturnRightFirstName() {
-        AddUserDTO addUserDTO = new AddUserDTO();
-        String firstName = "test first name";
-        addUserDTO.setFirstName(firstName);
-        User user = userConverter.convert(addUserDTO);
+    void shouldSetMiddleNameToNullInUserWhenConvertingFromUserDTO() {
+        userDTO.setMiddleName(null);
+        when(modelMapper.map(userDTO, User.class)).thenCallRealMethod();
+        User resultUser = userConverter.convert(userDTO);
 
-        assertEquals(firstName, user.getFirstName());
+        assertNull(resultUser.getMiddleName(), "Middle name in User should be null if it's null in UserDTO");
     }
 
     @Test
-    void shouldConvertAddUserDTOToUserAndReturnRightMiddleName() {
-        AddUserDTO addUserDTO = new AddUserDTO();
-        String middleName = "test middle name";
-        addUserDTO.setMiddleName(middleName);
-        User user = userConverter.convert(addUserDTO);
+    void shouldSetMiddleNameToNullInUserWhenMiddleNameIsEmpty() {
+        userDTO.setMiddleName("");
+        when(modelMapper.map(userDTO, User.class)).thenCallRealMethod();
+        User resultUser = userConverter.convert(userDTO);
 
-        assertEquals(middleName, user.getMiddleName());
+        assertNull(resultUser.getMiddleName(), "Middle name in User should be null if it's empty in UserDTO");
     }
 
     @Test
-    void shouldConvertAddUserDTOToUserAndReturnRightEmail() {
-        AddUserDTO addUserDTO = new AddUserDTO();
-        String email = "test email";
-        addUserDTO.setEmail(email);
-        User user = userConverter.convert(addUserDTO);
-
-        assertEquals(email, user.getEmail());
+    void shouldHandleNullUserWhenConvertingToUserDTO() {
+        assertThrows(NullPointerException.class, () -> userConverter.convert((User) null),
+                "Converting null User should throw NullPointerException");
     }
 
     @Test
-    void shouldConvertAddUserDTOToUserAndReturnRightAddress() {
-        AddUserDTO addUserDTO = new AddUserDTO();
-        String address = "test address";
-        addUserDTO.setAddress(address);
-        User user = userConverter.convert(addUserDTO);
-
-        assertEquals(address, user.getUserInfo().getAddress());
+    @SuppressWarnings("ConstantConditions")
+    void shouldHandleNullUserDTOWhenConvertingToUser() {
+        assertThrows(NullPointerException.class, () -> userConverter.convert((UserDTO) null),
+                "Converting null UserDTO should throw NullPointerException");
     }
 
     @Test
-    void shouldConvertAddUserDTOToUserAndReturnRightTelephone() {
-        AddUserDTO addUserDTO = new AddUserDTO();
-        String telephone = "test telephone";
-        addUserDTO.setTelephone(telephone);
-        User user = userConverter.convert(addUserDTO);
-
-        assertEquals(telephone, user.getUserInfo().getTelephone());
+    void shouldHandleNullUserWhenConvertingToUserInfoDTO() {
+        assertThrows(NullPointerException.class, () -> userConverter.convertUserToUserInfoDTO(null),
+                "Converting null User to UserInfoDTO should throw NullPointerException");
     }
 
     @Test
-    void shouldConvertUserToUserDetailsDTOAndReturnRightId() {
-        User user = new User();
-        Long id = 1L;
-        user.setId(id);
-        ShowUserInfoDTO showUserInfoDTO = userConverter.convertUserToUserDetailsDTO(user);
-
-        assertEquals(id, showUserInfoDTO.getId());
-    }
-
-    @Test
-    void shouldConvertUserToUserDetailsDTOAndReturnRightFirstName() {
-        User user = new User();
-        String firstName = "test first name";
-        user.setFirstName(firstName);
-        ShowUserInfoDTO showUserInfoDTO = userConverter.convertUserToUserDetailsDTO(user);
-
-        assertEquals(firstName, showUserInfoDTO.getFirstName());
-    }
-
-    @Test
-    void shouldConvertUserToUserDetailsDTOAndReturnRightLastName() {
-        User user = new User();
-        String lastName = "test last name";
-        user.setLastName(lastName);
-        ShowUserInfoDTO showUserInfoDTO = userConverter.convertUserToUserDetailsDTO(user);
-
-        assertEquals(lastName, showUserInfoDTO.getLastName());
-    }
-
-    @Test
-    void shouldConvertUserToUserDetailsDTOAndReturnRightAddress() {
+    void shouldCorrectlySetAddressAndTelephoneWhenUserInfoIsNotNull() {
         UserInfo userInfo = new UserInfo();
-        String address = "test address";
-        userInfo.setAddress(address);
-        User user = new User();
+        userInfo.setAddress("123 Main St");
+        userInfo.setTelephone("555-1234");
         user.setUserInfo(userInfo);
-        ShowUserInfoDTO showUserInfoDTO = userConverter.convertUserToUserDetailsDTO(user);
 
-        assertEquals(address, showUserInfoDTO.getAddress());
+        UserInfoDTO expectedDTO = new UserInfoDTO();
+        expectedDTO.setAddress("123 Main St");
+        expectedDTO.setTelephone("555-1234");
+
+        when(modelMapper.map(user, UserInfoDTO.class)).thenReturn(expectedDTO);
+
+        UserInfoDTO resultDTO = userConverter.convertUserToUserInfoDTO(user);
+
+        assertEquals("123 Main St", resultDTO.getAddress(), "Address should be correctly set when userInfo is not null");
+        assertEquals("555-1234", resultDTO.getTelephone(), "Telephone should be correctly set when userInfo is not null");
     }
 
     @Test
-    void shouldConvertUserToUserDetailsDTOAndReturnRightTelephone() {
-        UserInfo userInfo = new UserInfo();
-        String telephone = "test telephone";
-        userInfo.setTelephone(telephone);
-        User user = new User();
-        user.setUserInfo(userInfo);
-        ShowUserInfoDTO showUserInfoDTO = userConverter.convertUserToUserDetailsDTO(user);
+    void shouldNotSetAddressAndTelephoneWhenUserInfoIsNull() {
+        user.setUserInfo(null);
 
-        assertEquals(telephone, showUserInfoDTO.getTelephone());
+        UserInfoDTO expectedDTO = new UserInfoDTO();
+
+        when(modelMapper.map(user, UserInfoDTO.class)).thenReturn(expectedDTO);
+
+        UserInfoDTO resultDTO = userConverter.convertUserToUserInfoDTO(user);
+
+        assertNull(resultDTO.getAddress(), "Address should be null when userInfo is null");
+        assertNull(resultDTO.getTelephone(), "Telephone should be null when userInfo is null");
     }
 }

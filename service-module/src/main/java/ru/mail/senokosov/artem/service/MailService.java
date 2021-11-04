@@ -1,10 +1,10 @@
 package ru.mail.senokosov.artem.service;
 
-import ru.mail.senokosov.artem.service.model.show.ShowUserDTO;
+import ru.mail.senokosov.artem.service.model.UserDTO;
 
 public interface MailService {
 
-    void sendPasswordToEmailAfterAddUser(ShowUserDTO userDTO);
+    void sendPasswordToEmailAfterAddUser(UserDTO userDTO);
 
-    void sendPasswordToEmailAfterResetPassword(ShowUserDTO userDTO);
+    void sendPasswordToEmailAfterResetPassword(UserDTO userDTO);
 }

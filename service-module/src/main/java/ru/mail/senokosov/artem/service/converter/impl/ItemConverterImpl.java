@@ -1,51 +1,43 @@
 package ru.mail.senokosov.artem.service.converter.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import ru.mail.senokosov.artem.repository.model.Item;
-import ru.mail.senokosov.artem.repository.model.ItemInfo;
 import ru.mail.senokosov.artem.service.converter.ItemConverter;
-import ru.mail.senokosov.artem.service.model.add.AddItemDTO;
-import ru.mail.senokosov.artem.service.model.show.ShowItemDTO;
+import ru.mail.senokosov.artem.service.model.ItemDTO;
 
 import java.math.BigDecimal;
-import java.util.Objects;
-import java.util.UUID;
 
 @Component
+@RequiredArgsConstructor
 public class ItemConverterImpl implements ItemConverter {
 
+    private final ModelMapper modelMapper;
+
     @Override
-    public ShowItemDTO convert(Item item) {
-        ShowItemDTO showItemDTO = new ShowItemDTO();
-        Long id = item.getId();
-        showItemDTO.setId(id);
-        String title = item.getTitle();
-        showItemDTO.setTitle(title);
-        UUID uuid = item.getUuid();
-        showItemDTO.setUuid(uuid);
-        BigDecimal price = item.getPrice();
-        showItemDTO.setPrice(price);
-        ItemInfo itemInfo = item.getItemInfo();
-        if (Objects.nonNull(itemInfo)) {
-            String shortContent = itemInfo.getShortContent();
-            showItemDTO.setContent(shortContent);
-        }
-        return showItemDTO;
+    public ItemDTO convert(Item item) {
+        ItemDTO itemDTO = modelMapper.map(item, ItemDTO.class);
+
+        String shortContent = item.getContent();
+        itemDTO.setContent(shortContent);
+
+        return itemDTO;
     }
 
     @Override
-    public Item convert(AddItemDTO addItemDTO) {
+    public Item convert(ItemDTO itemDTO) {
         Item item = new Item();
-        String title = addItemDTO.getTitle();
-        item.setTitle(title);
-        BigDecimal price = addItemDTO.getPrice();
-        item.setPrice(price);
-        ItemInfo itemInfo = new ItemInfo();
-        String content = addItemDTO.getContent();
-        itemInfo.setShortContent(content);
 
-        itemInfo.setItem(item);
-        item.setItemInfo(itemInfo);
+        String title = itemDTO.getTitle();
+        item.setTitle(title);
+
+        String content = itemDTO.getContent();
+        item.setContent(content);
+
+        BigDecimal price = itemDTO.getPrice();
+        item.setPrice(price);
+
         return item;
     }
 }

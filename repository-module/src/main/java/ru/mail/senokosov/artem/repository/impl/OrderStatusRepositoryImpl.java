@@ -1,38 +1,33 @@
 package ru.mail.senokosov.artem.repository.impl;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.mail.senokosov.artem.repository.OrderStatusRepository;
 import ru.mail.senokosov.artem.repository.model.OrderStatus;
 
 import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Root;
+import javax.persistence.Query;
 
-import static ru.mail.senokosov.artem.repository.constant.RepositoryConstants.ID_PARAMETER;
-
+@Slf4j
 @Repository
-@Log4j2
 public class OrderStatusRepositoryImpl extends GenericRepositoryImpl<Long, OrderStatus> implements OrderStatusRepository {
 
     @Override
     public OrderStatus findByStatusName(String status) {
+        log.debug("Finding OrderStatus by status name: {}", status);
+        String stringQuery = "SELECT os FROM OrderStatus as os WHERE os.status=:status";
+        Query query = entityManager.createQuery(stringQuery);
+        query.setParameter("status", status);
+        OrderStatus orderStatus = null;
         try {
-            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-            CriteriaQuery<OrderStatus> orderStatusQuery = criteriaBuilder.createQuery(OrderStatus.class);
-            Root<OrderStatus> orderStatusRoot = orderStatusQuery.from(OrderStatus.class);
-            orderStatusQuery.select(orderStatusRoot);
-            ParameterExpression<Long> parameter = criteriaBuilder.parameter(Long.class);
-            orderStatusQuery.where(criteriaBuilder.equal(orderStatusRoot.get(ID_PARAMETER), parameter));
-            TypedQuery<OrderStatus> typedQuery = entityManager.createQuery(orderStatusQuery);
-            typedQuery.setParameter(String.valueOf(parameter), status);
-            return typedQuery.getSingleResult();
-        } catch (NoResultException e) {
-            log.error(e.getMessage(), e);
-            return null;
+            orderStatus = (OrderStatus) query.getSingleResult();
+            log.debug("OrderStatus found: {}", orderStatus);
+        } catch (NoResultException exception) {
+            log.error("No OrderStatus found with status: {}", status, exception);
+        } catch (Exception exception) {
+            log.error("An error occurred while finding OrderStatus by status name: {}", status, exception);
+            throw exception;
         }
+        return orderStatus;
     }
 }

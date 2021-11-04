@@ -7,9 +7,7 @@ import java.util.UUID;
 
 public interface ItemRepository extends GenericRepository<Long, Item> {
 
-    Long getCountItems();
+    Item findByUuid(UUID uuid);
 
     List<Item> findAll(Integer startPosition, int maximumItemsOnPage);
-
-    Item findByUuid(UUID uuid);
 }

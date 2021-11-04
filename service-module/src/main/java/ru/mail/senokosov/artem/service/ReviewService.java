@@ -1,21 +1,16 @@
 package ru.mail.senokosov.artem.service;
 
-import org.hibernate.service.spi.ServiceException;
+import ru.mail.senokosov.artem.service.exception.ServiceException;
 import ru.mail.senokosov.artem.service.model.PageDTO;
-import ru.mail.senokosov.artem.service.model.add.AddReviewDTO;
-import ru.mail.senokosov.artem.service.model.show.ShowReviewDTO;
-
-import java.util.List;
+import ru.mail.senokosov.artem.service.model.ReviewDTO;
 
 public interface ReviewService {
 
-    void deleteById(Long id);
-
-    void changeStatusByIds(List<Long> checkedIds, List<Long> allIds);
-
     PageDTO getReviewsByPage(Integer page);
 
-    ShowReviewDTO add(AddReviewDTO addReviewDTO) throws ServiceException;
+    boolean isDeleteById(Long id);
 
-    PageDTO getShowReviewsByPage(int page);
+    void addReview(ReviewDTO reviewDTO) throws ServiceException;
+
+    void changeReviewStatus(Long reviewId) throws ServiceException;
 }

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>News List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            padding-top: 60px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 960px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 80px auto auto;
+        }
+
+        .container-fluid {
+            max-width: 960px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            color: #0056b3;
+        }
+
+        .card-text {
+            color: #666;
+        }
+
+        .btn-info, .btn-danger {
+            margin-right: 5px;
+        }
+
+        .pagination {
+            justify-content: center;
+            padding-top: 20px;
+        }
+
+        .page-link {
+            color: #0056b3;
+        }
+
+        .page-item.active .page-link {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .page-link:hover {
+            color: #0056b3;
+        }
+
+        .navbar-dark.bg-primary {
+            background-color: #0056b3 !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: #ffffff;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/user-profile" style="font-size: 22px; padding-top: 10px; padding-bottom: 10px;">News
+            Portal</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <div sec:authorize="hasAnyAuthority('ADMINISTRATOR')">
+                    <li class="nav-item">
+                        <a class="nav-link" type="submit" th:href="@{/admin/users}">Users</a>
+                    </li>
+                </div>
+
+                <li class="nav-item">
+                    <a class="nav-link" methods="get"
+                       th:href="@{${#authorization.expression('hasAuthority(''ADMINISTRATOR'')') ? '/admin/news' :
+                  (#authorization.expression('hasAuthority(''SALE_USER'')') ? '/seller/news'  :
+                  '/customer/news')}}" type="submit">News</a>
+                </li>
+
+                <div sec:authorize="hasAnyAuthority('ADMINISTRATOR','SELLER_USER')">
+                    <a class="nav-link" methods="get"
+                       th:href="@{${#authorization.expression('hasAuthority(''ADMINISTRATOR'')') ? '/admin/news/add-news' :
+                  '/seller/news/add-news'}}" type="submit">Add news</a>
+                </div>
+
+                <div sec:authorize="hasAnyAuthority('ADMINISTRATOR')">
+                    <li class="nav-item">
+                        <a class="nav-link" type="submit" th:href="@{/admin/reviews}">Reviews</a>
+                    </li>
+                </div>
+
+                <li class="nav-item">
+                    <a class="nav-link" methods="get"
+                       th:href="@{${#authorization.expression('hasAuthority(''ADMINISTRATOR'')') ? '/admin/items' :
+                  (#authorization.expression('hasAuthority(''SALE_USER'')') ? '/seller/items'  :
+                  '/customer/items')}}" type="submit">Items</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" methods="get"
+                       th:href="@{${#authorization.expression('hasAuthority(''ADMINISTRATOR'')') ? '/admin/orders' :
+                  (#authorization.expression('hasAuthority(''SALE_USER'')') ? '/seller/orders'  :
+                  '/customer/orders')}}" type="submit">Orders</a>
+                </li>
+            </ul>
+            <div class="navbar-text ms-3 me-2" th:text="${#authentication.name}">Username</div>
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+                <button type="submit" class="btn btn-light ms-2">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h1>News List</h1>
+    <div th:if="${pageDTO != null}">
+        <div th:each="news : ${pageDTO.getNewses}">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${news.title}">Article Title</h5>
+                    <h6 class="card-subtitle mb-2 text-muted" th:text="${news.dateOfCreation}">Date</h6>
+                    <p class="card-text" th:text="${news.shortContent}">Short content...</p>
+                    <a th:href="@{news/{id}(id=${news.id})}" class="btn btn-info btn-sm">More...</a>
+                    <div sec:authorize="hasAnyAuthority('ADMINISTRATOR','SALE_USER')" class="mt-2">
+                        <button type="button" class="btn btn-danger btn-sm">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:if="${pageDTO.totalPages > 1}">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${pageDTO.currentPage == 1} ? 'disabled' : ''">
+                <a class="page-link" th:href="@{${basePath}(page=${pageDTO.currentPage - 1})}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li th:each="pageNum : ${#numbers.sequence(1, pageDTO.totalPages)}" class="page-item"
+                th:classappend="${pageNum == pageDTO.currentPage} ? 'active' : ''">
+                <a class="page-link" th:href="@{${basePath}(page=${pageNum})}" th:text="${pageNum}">Page number</a>
+            </li>
+            <li class="page-item" th:classappend="${pageDTO.currentPage == pageDTO.totalPages} ? 'disabled' : ''">
+                <a class="page-link" th:href="@{${basePath}(page=${pageDTO.currentPage + 1})}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

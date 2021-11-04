@@ -16,13 +16,13 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false, length = 40)
     private String lastName;
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false, length = 20)
     private String firstName;
-    @Column(name = "middle_name")
+    @Column(name = "middle_name", length = 40)
     private String middleName;
-    @Column
+    @Column(nullable = false, unique = true, length = 50)
     private String email;
     @Column
     private String password;
@@ -38,7 +38,7 @@ public class User {
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private Set<Article> articles = new HashSet<>();
+    private Set<News> news = new HashSet<>();
     @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
@@ -55,5 +55,5 @@ public class User {
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private Set<OrderInfo> orderDetails = new HashSet<>();
+    private Set<Order> order = new HashSet<>();
 }

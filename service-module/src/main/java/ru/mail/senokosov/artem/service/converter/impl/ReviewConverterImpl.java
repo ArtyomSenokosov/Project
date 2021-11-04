@@ -1,12 +1,13 @@
 package ru.mail.senokosov.artem.service.converter.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import ru.mail.senokosov.artem.repository.model.Review;
-import ru.mail.senokosov.artem.repository.model.Status;
+import ru.mail.senokosov.artem.repository.model.ReviewStatus;
 import ru.mail.senokosov.artem.repository.model.User;
 import ru.mail.senokosov.artem.service.converter.ReviewConverter;
-import ru.mail.senokosov.artem.service.model.add.AddReviewDTO;
-import ru.mail.senokosov.artem.service.model.show.ShowReviewDTO;
+import ru.mail.senokosov.artem.service.model.ReviewDTO;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -14,43 +15,47 @@ import java.util.Objects;
 import static ru.mail.senokosov.artem.service.util.ServiceUtil.getFormatDateTime;
 
 @Component
+@RequiredArgsConstructor
 public class ReviewConverterImpl implements ReviewConverter {
 
+    private final ModelMapper modelMapper;
+
     @Override
-    public ShowReviewDTO convert(Review review) {
-        ShowReviewDTO showReviewDTO = new ShowReviewDTO();
-        Long id = review.getId();
-        showReviewDTO.setId(id);
+    public ReviewDTO convert(Review review) {
+        ReviewDTO reviewDTO = modelMapper.map(review, ReviewDTO.class);
+
         User user = review.getUser();
         if (Objects.nonNull(user)) {
             String lastName = user.getLastName();
-            showReviewDTO.setLastName(lastName);
+            reviewDTO.setLastName(lastName);
             String firstName = user.getFirstName();
-            showReviewDTO.setFirstName(firstName);
-            String middleName = user.getMiddleName();
-            showReviewDTO.setMiddleName(middleName);
+            reviewDTO.setFirstName(firstName);
         }
-        showReviewDTO.setReview(review.getReview());
-        LocalDateTime date = review.getLocalDate();
+
+        LocalDateTime date = review.getDateOfCreation();
         if (Objects.nonNull(date)) {
             String dateTime = getFormatDateTime(date);
-            showReviewDTO.setLocalDateTime(dateTime);
+            reviewDTO.setDateOfCreation(dateTime);
         }
-        if (Objects.nonNull(review.getStatus())) {
-            Status status = review.getStatus();
-            String statusName = status.getStatus();
-            showReviewDTO.setStatus(statusName);
+
+        if (Objects.nonNull(review.getReviewStatus())) {
+            ReviewStatus reviewStatus = review.getReviewStatus();
+            String statusName = reviewStatus.getStatusName();
+            reviewDTO.setStatus(statusName);
         }
-        return showReviewDTO;
+
+        return reviewDTO;
     }
 
     @Override
-    public Review convert(AddReviewDTO addReviewDTO) {
+    public Review convert(ReviewDTO reviewDTO) {
         Review review = new Review();
-        String addReview = addReviewDTO.getReview();
+
+        String addReview = reviewDTO.getContent();
         if (Objects.nonNull(addReview)) {
-            review.setReview(addReview);
+            review.setContent(addReview);
         }
+
         return review;
     }
 }

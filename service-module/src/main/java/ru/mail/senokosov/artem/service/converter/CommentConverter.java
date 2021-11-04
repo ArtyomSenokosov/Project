@@ -1,12 +1,11 @@
 package ru.mail.senokosov.artem.service.converter;
 
 import ru.mail.senokosov.artem.repository.model.Comment;
-import ru.mail.senokosov.artem.service.model.add.AddCommentDTO;
-import ru.mail.senokosov.artem.service.model.show.ShowCommentDTO;
+import ru.mail.senokosov.artem.service.model.CommentDTO;
 
 public interface CommentConverter {
 
-    ShowCommentDTO convert(Comment comment);
+    CommentDTO convert(Comment comment);
 
-    Comment convert(AddCommentDTO addCommentDTO);
+    Comment convert(CommentDTO commentDTO);
 }

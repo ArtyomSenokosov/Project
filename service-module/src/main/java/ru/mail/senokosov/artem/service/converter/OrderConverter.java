@@ -1,9 +1,9 @@
 package ru.mail.senokosov.artem.service.converter;
 
 import ru.mail.senokosov.artem.repository.model.Order;
-import ru.mail.senokosov.artem.service.model.show.ShowOrderDTO;
+import ru.mail.senokosov.artem.service.model.OrderDTO;
 
 public interface OrderConverter {
 
-    ShowOrderDTO convert(Order order);
+    OrderDTO convert(Order order);
 }

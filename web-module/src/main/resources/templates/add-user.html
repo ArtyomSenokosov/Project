@@ -1,75 +1,173 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <meta charset="ISO-8859-1">
-    <title>Add user</title>
+    <meta charset="UTF-8">
+    <title>Add User</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            padding-top: 60px;
+            margin: 0;
+        }
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-          integrity="undefined"
-          crossorigin="anonymous">
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #ffffff;
+            width: 100%;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
+        .container-fluid {
+            max-width: 960px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            background-color: #0056b3;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .navbar-dark.bg-primary {
+            background-color: #0056b3 !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: #ffffff;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" type="submit" th:href="@{/articles}">News</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" type="submit" th:href="@{/items}">Shop</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" type="submit" href="#">Basket</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" type="submit" th:href="@{/user-profile}">Account information</a>
-            </li>
-            <li class="nav-item">
-                <span class="navbar-text" th:text="${#authentication.name}"></span>
-                <a class="btn btn-light" th:href="@{/logout}" role="button">Logout</a>
-            </li>
-        </ul>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/user-profile" style="font-size: 22px; padding-top: 10px; padding-bottom: 10px;">News
+            Portal</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" type="submit" th:href="@{/admin/users}">Users</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" type="submit" th:href="@{/admin/users/add-user}">Add user</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" type="submit" th:href="@{/admin/news}">News</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" type="submit" th:href="@{/admin/reviews}">Reviews</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" type="submit" th:href="@{/admin/items}">Items</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" type="submit" th:href="@{/admin/orders}">Orders</a>
+                </li>
+            </ul>
+            <div class="navbar-text ms-3 me-2" th:text="${#authentication.name}">Username</div>
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+                <button type="submit" class="btn btn-light ms-2">Logout</button>
+            </form>
+        </div>
     </div>
 </nav>
-<h2>Add user</h2>
-<form class="row row-cols-lg-auto g-3 align-items-center" method="post" th:object="${user}">
-    <div class="col-12">
-        <div class="input-group has-validation">
-            <span class="input-group-text" id="second-name-sizing-default">Second name</span>
-            <input type="text" class="form-control" id="secondname" name="secondname"
-                   required th:field="*{lastName}">
+
+<div class="container mt-5">
+    <h1>Add User</h1>
+    <form th:action="@{/admin/users/add-user}" th:object="${user}" method="post">
+        <div class="mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="firstName" th:field="*{firstName}"
+                   placeholder="Enter first name" required
+                   th:attr="maxlength=${fieldConstraints['firstName']['max']}, minlength=${fieldConstraints['firstName']['min']}">
+            <div class="text-danger" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
         </div>
-        <div class="input-group has-validation">
-            <span class="input-group-text" id="first-name-sizing-default">Firstname</span>
-            <input type="text" class="form-control" id="firstname" name="firstname"
-                   required th:field="*{firstName}">
+
+        <div class="mb-3">
+            <label for="middleName" class="form-label">Middle Name</label>
+            <input type="text" class="form-control" id="middleName" th:field="*{middleName}"
+                   placeholder="Enter middle name"
+                   th:attr="maxlength=${fieldConstraints['middleName']['max']}, minlength=${fieldConstraints['middleName']['min']}">
+            <div class="text-danger" th:if="${#fields.hasErrors('middleName')}" th:errors="*{middleName}"></div>
         </div>
-        <div class="input-group has-validation">
-            <span class="input-group-text" id="middle-name-sizing-default">Middle name</span>
-            <input type="text" class="form-control" id="middlename" name="middlename"
-                   required th:field="*{middleName}">
+
+        <div class="mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="lastName" th:field="*{lastName}" placeholder="Enter last name"
+                   required
+                   th:attr="maxlength=${fieldConstraints['lastName']['max']}, minlength=${fieldConstraints['lastName']['min']}">
+            <div class="text-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
         </div>
-        <div class="input-group has-validation">
-            <span class="input-group-text" id="email-sizing-default">Email</span>
-            <input type="text" class="form-control" id="email" name="email"
-                   required th:field="*{email}">
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="Enter email" required
+                   th:attr="maxlength=${fieldConstraints['email']['max']}, minlength=${fieldConstraints['email']['min']}">
+            <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
         </div>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="role-sizing-default">Role</span>
-            </div>
-            <select class="form-select" aria-label="Default select example" th:field="*{role}">
-                <option th:each="role : ${T(ru.mail.senokosov.artem.service.model.RoleDTOEnum).values()}"
+
+        <div class="mb-3">
+            <label for="roleName" class="form-label">Role</label>
+            <select id="roleName" class="form-select" th:field="*{roleName}" required>
+                <option value="">Choose...</option>
+                <option th:each="role : ${T(ru.mail.senokosov.artem.service.model.enums.RoleDTOEnum).values()}"
                         th:value="${role.name()}" th:text="${role.name()}"></option>
             </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('roleName')}" th:errors="*{roleName}"></div>
         </div>
-    </div>
-    <div class="col-12">
-        <button type="submit" class="btn btn-primary">Add user</button>
-    </div>
-</form>
-<script th:src="@{/js/bootstrap.bundTe.js}"></script>
+
+        <button type="submit" class="btn btn-primary">Add User</button>
+    </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
