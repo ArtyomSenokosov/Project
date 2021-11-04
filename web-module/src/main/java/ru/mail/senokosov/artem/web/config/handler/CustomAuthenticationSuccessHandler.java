@@ -1,9 +1,9 @@
-package ru.mail.senokosov.artem.web.handler;
+package ru.mail.senokosov.artem.web.config.handler;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import ru.mail.senokosov.artem.web.model.enums.RoleDTOEnum;
+import ru.mail.senokosov.artem.web.model.RoleDTOEnum;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

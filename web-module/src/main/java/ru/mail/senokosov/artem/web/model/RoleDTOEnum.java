@@ -1,4 +1,4 @@
-package ru.mail.senokosov.artem.web.model.enums;
+package ru.mail.senokosov.artem.web.model;
 
 public enum RoleDTOEnum {
 

@@ -1,4 +1,4 @@
-package ru.mail.senokosov.artem.web;
+package ru.mail.senokosov.artem.web.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

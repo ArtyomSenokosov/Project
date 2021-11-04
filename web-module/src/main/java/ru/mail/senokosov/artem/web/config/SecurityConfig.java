@@ -1,4 +1,4 @@
-package ru.mail.senokosov.artem.web;
+package ru.mail.senokosov.artem.web.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -12,9 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import ru.mail.senokosov.artem.web.handler.CustomAccessDeniedHandler;
-import ru.mail.senokosov.artem.web.handler.CustomAuthenticationSuccessHandler;
-import ru.mail.senokosov.artem.web.model.enums.RoleDTOEnum;
+import ru.mail.senokosov.artem.web.config.handler.CustomAccessDeniedHandler;
+import ru.mail.senokosov.artem.web.config.handler.CustomAuthenticationSuccessHandler;
+import ru.mail.senokosov.artem.web.model.RoleDTOEnum;
 
 @Configuration
 @RequiredArgsConstructor
