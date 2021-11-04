@@ -1,4 +1,4 @@
-package ru.mail.senokosov.artem.web.handler;
+package ru.mail.senokosov.artem.web.config.handler;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.AccessDeniedException;

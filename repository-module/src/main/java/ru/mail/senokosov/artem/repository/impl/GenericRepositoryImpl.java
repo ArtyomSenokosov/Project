@@ -18,11 +18,9 @@ public class GenericRepositoryImpl<I, T> implements GenericRepository<I, T> {
 
     protected Class<T> entityClass;
 
-    @SuppressWarnings("unchecked")
     public GenericRepositoryImpl() {
-        ParameterizedType genericSuperclass = (ParameterizedType) getClass()
-                .getGenericSuperclass();
-        this.entityClass = (Class<T>) genericSuperclass.getActualTypeArguments()[1];
+        ParameterizedType genericClass = (ParameterizedType) getClass().getGenericSuperclass();
+        this.entityClass = (Class<T>) genericClass.getActualTypeArguments()[1];
     }
 
     @Override
@@ -36,21 +34,8 @@ public class GenericRepositoryImpl<I, T> implements GenericRepository<I, T> {
     }
 
     @Override
-    public void merge(T entity) {
-        entityManager.merge(entity);
-    }
-
-    @Override
     public T findById(I id) {
         return entityManager.find(entityClass, id);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<T> findAll() {
-        String query = "FROM" + entityClass.getName();
-        Query q = (Query) entityManager.createQuery(query);
-        return q.getResultList();
     }
 
     @Override
@@ -62,5 +47,19 @@ public class GenericRepositoryImpl<I, T> implements GenericRepository<I, T> {
             log.error(e.getMessage(), e);
             throw new RepositoryException(entityClass.getName() + " with id:=" + id + " was not found");
         }
+
+    }
+
+    @Override
+    public void merge(T entity) {
+        entityManager.merge(entity);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<T> findAll() {
+        String query = "from " + entityClass.getName();
+        Query managerQuery = entityManager.createQuery(query);
+        return managerQuery.getResultList();
     }
 }

@@ -6,13 +6,7 @@ import ru.mail.senokosov.artem.repository.StatusRepository;
 import ru.mail.senokosov.artem.repository.model.Status;
 
 import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Root;
-
-import static ru.mail.senokosov.artem.repository.constant.RepositoryConstants.ID_PARAMETER;
+import javax.persistence.Query;
 
 @Repository
 @Log4j2
@@ -20,19 +14,15 @@ public class StatusRepositoryImpl extends GenericRepositoryImpl<Long, Status> im
 
     @Override
     public Status findByStatusName(String statusName) {
+        String hql = "SELECT s FROM Status as s WHERE s.status=:statusName";
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("statusName", statusName);
         try {
-            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-            CriteriaQuery<Status> statusQuery = criteriaBuilder.createQuery(Status.class);
-            Root<Status> statusRoot = statusQuery.from(Status.class);
-            statusQuery.select(statusRoot);
-            ParameterExpression<Long> parameter = criteriaBuilder.parameter(Long.class);
-            statusQuery.where(criteriaBuilder.equal(statusRoot.get(ID_PARAMETER), parameter));
-            TypedQuery<Status> typedQuery = entityManager.createQuery(statusQuery);
-            typedQuery.setParameter(String.valueOf(parameter), statusName);
-            return typedQuery.getSingleResult();
+            query.getSingleResult();
         } catch (NoResultException e) {
             log.error(e.getMessage(), e);
             return null;
         }
+        return (Status) query.getSingleResult();
     }
 }

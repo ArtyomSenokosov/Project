@@ -1,4 +1,4 @@
-package ru.mail.senokosov.artem.web;
+package ru.mail.senokosov.artem.web.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import ru.mail.senokosov.artem.web.model.enums.RoleDTOEnum;
+import ru.mail.senokosov.artem.web.model.RoleDTOEnum;
 
 import static ru.mail.senokosov.artem.web.constant.PathConstant.REST_API_USER_PATH;
 
