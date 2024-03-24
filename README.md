@@ -295,7 +295,7 @@ The following data should be displayed:
 #### _run docker with settings:_
 
 ```
-version: '3.3'
+version: '3.8'
 services:
   db:
     image: mysql:latest
